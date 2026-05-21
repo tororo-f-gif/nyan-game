@@ -13,6 +13,58 @@ body{margin:0;background:linear-gradient(#ffe08a,#21142f);font-family:sans-serif
 #feverBg:before{content:"FEVER";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:1000;color:#fff;text-shadow:2px 2px #000,0 0 9px #ff4f93;letter-spacing:2px}
 #feverBg:after{content:"";position:absolute;inset:-16px;background:radial-gradient(circle at 10% 40%,#fff 0 1px,transparent 3px),radial-gradient(circle at 22% 66%,#ffd84a 0 2px,transparent 4px),radial-gradient(circle at 42% 35%,#fff 0 2px,transparent 4px),radial-gradient(circle at 62% 62%,#ffb7ff 0 1px,transparent 3px),radial-gradient(circle at 82% 30%,#fff 0 2px,transparent 4px),radial-gradient(circle at 94% 55%,#ffd84a 0 1px,transparent 3px);opacity:.65}
 @keyframes feverSweep{0%{left:-135%;opacity:0}14%{opacity:.9}78%{opacity:.9}100%{left:110%;opacity:0}}
+
+#skinGetBanner{
+position:absolute;
+left:50%;
+top:20%;
+transform:translateX(-50%);
+z-index:999;
+background:linear-gradient(90deg,#ff0077,#ffcc00,#ffffff,#ffcc00,#ff0077);
+border:4px solid #fff;
+border-radius:22px;
+padding:14px 22px;
+font-size:20px;
+font-weight:1000;
+color:#fff;
+text-shadow:3px 3px #000,0 0 12px #ff4f93;
+box-shadow:0 0 18px #fff,0 0 35px #ffd84a,0 0 55px #ff4f93;
+text-align:center;
+white-space:nowrap;
+pointer-events:none;
+}
+#skinGetBanner:before{
+content:"✨✨✨";
+position:absolute;
+left:50%;
+top:-28px;
+transform:translateX(-50%);
+font-size:26px;
+animation:skinSpark .35s infinite alternate;
+}
+#skinGetBanner:after{
+content:"✨✨✨";
+position:absolute;
+left:50%;
+bottom:-30px;
+transform:translateX(-50%);
+font-size:26px;
+animation:skinSpark .35s infinite alternate-reverse;
+}
+#skinGetBanner.show{animation:skinGetPop 1.8s ease-out forwards}
+@keyframes skinGetPop{
+0%{opacity:0;transform:translateX(-50%) scale(.35) rotate(-8deg)}
+12%{opacity:1;transform:translateX(-50%) scale(1.25) rotate(5deg)}
+24%{transform:translateX(-50%) scale(.95) rotate(-3deg)}
+38%{transform:translateX(-50%) scale(1.08) rotate(2deg)}
+75%{opacity:1;transform:translateX(-50%) scale(1) rotate(0)}
+100%{opacity:0;transform:translateX(-50%) scale(.85) rotate(0)}
+}
+@keyframes skinSpark{
+from{opacity:.55;filter:drop-shadow(0 0 4px #fff)}
+to{opacity:1;filter:drop-shadow(0 0 14px #ffd84a)}
+}
+
 #top{position:absolute;left:8px;right:8px;top:6px;height:34px;padding:2px;background:#2a183cee;border:1.5px solid #fff;border-radius:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;text-align:center;z-index:100}
 .box{background:#130b1eee;border:1px solid #fff;border-radius:6px;padding:1px;font-weight:900;font-size:7px;line-height:1}
 .box span{display:block;color:#ffd84a;font-size:12px;text-shadow:1px 1px #000;margin-top:0}
@@ -72,6 +124,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px #0008}
 
 <div id="game">
 <div id="feverBg"></div>
+<div id="skinGetBanner" class="hidden"></div>
 <div id="top">
 <div class="box">スコア<span id="score">0</span></div>
 <div class="box">ワニ<span id="stageNum">1</span></div>
@@ -135,7 +188,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px #0008}
 
 <script>
 var score=0,stage=1,lives=5,food=0,needFood=3,startClock=0,combo=0,maxCombo=0,fever=false,feverEnd=0,coin=0,running=false,paused=false,judging=false,current=null,x=0,y=0,v=.95,loopId=null,chains={cat:[],gator:[]},itemBag=[],aliens=[],nextAlienAt=0,chaosVX=0,chaosTick=0,giftAllowed=false,giftDropped=false,gatorHp=90,gatorMaxHp=90;
-var feverFxTimer=null,bgmStarted=false,manualStopAudio=false;
+var feverFxTimer=null,bgmStarted=false,manualStopAudio=false,bgmKickTimer=null;
 var selectedCatName=localStorage.getItem("nyankoSelectedCat")||"ノーマル猫",collection={};
 var catCards=[{emoji:"😺",name:"ノーマル猫"},{emoji:"😸",name:"ごきげん猫"},{emoji:"😼",name:"ボス猫"},{emoji:"🥷",name:"忍者猫"},{emoji:"🚀",name:"宇宙猫"},{emoji:"🦁",name:"ライオン猫"},{emoji:"👑",name:"王様猫"}];
 var bosses=[["🐊","第1ワニ：ちびワニ",90,.95],["🐊","第2ワニ：ふつうワニ",130,1.1],["🐊","第3ワニ：かたいワニ",180,1.25],["🐊","第4ワニ：怒りワニ",240,1.42],["🐊","第5ワニ：鉄ワニ",320,1.6],["🦎","第6ワニ：変異ワニ",430,1.82],["🐲","第7ワニ：竜ワニ",560,2.05],["🐉","第8ワニ：火炎ワニ",720,2.3],["🦖","第9ワニ：恐竜ワニ",920,2.58],["🦕","第10ワニ：古代ワニ",1180,2.88],["👹","第11ワニ：鬼ワニ",1500,3.2],["👺","第12ワニ：天狗ワニ",1900,3.55],["💀","第13ワニ：骨ワニ",2400,3.92],["☠️","第14ワニ：呪いワニ",3050,4.32],["👾","第15ワニ：宇宙ワニ",3900,4.75],["🛸","第16ワニ：UFOワニ",5000,5.2],["🔥","第17ワニ：炎神ワニ",6500,5.7],["⚡","第18ワニ：雷神ワニ",8500,6.25],["🌋","第19ワニ：火山ワニ",11200,6.85],["🌌","第20ワニ：銀河ワニ",15000,7.5],["👑","第21ワニ：猫神を喰う神",22000,8.2]];
@@ -161,7 +214,13 @@ if(p&&p.then){p.then(function(){bgmStarted=true}).catch(function(){})}
 
 function playBgm(){
 if(!running||paused||manualStopAudio)return;
+rawPlayBgm()
+}
+
+function kickBgm(){
+clearTimeout(bgmKickTimer);
 rawPlayBgm();
+bgmKickTimer=setTimeout(function(){if(running&&!paused&&!manualStopAudio)rawPlayBgm()},120)
 }
 
 function stopBgm(){
@@ -195,6 +254,15 @@ function saveSkin(){localStorage.setItem("nyankoSelectedCat",selectedCatName)}
 function selectedEmoji(){var c=catCards.find(function(x){return x.name===selectedCatName});return c?c.emoji:"😺"}
 function renderCat(face){var badge="";if(face==="good")badge="😸";if(face==="miss")badge="🙀";if(face==="level")badge="😻";if(face==="angry")badge="😾";el.cat.innerHTML="<span>"+selectedEmoji()+"</span>"+(badge?'<span class="faceBadge">'+badge+"</span>":"");if(face){clearTimeout(window.catFaceTimer);window.catFaceTimer=setTimeout(function(){renderCat("")},520)}}
 function show(t){el.msg.textContent=t;el.msg.style.opacity="1";clearTimeout(window.msgTimer);window.msgTimer=setTimeout(function(){el.msg.style.opacity="0"},650)}
+function showSkinGet(card){
+var b=$("skinGetBanner");
+if(!b)return;
+b.innerHTML="🎁✨超レア猫スキンGET！✨<br>"+card.emoji+" "+card.name;
+b.classList.remove("hidden","show");
+void b.offsetWidth;
+b.classList.add("show");
+setTimeout(function(){b.classList.add("hidden");b.classList.remove("show")},1900)
+}
 function feverSweep(){el.feverBg.classList.remove("run");void el.feverBg.offsetWidth;el.feverBg.classList.add("run");clearTimeout(feverFxTimer);feverFxTimer=setTimeout(function(){el.feverBg.classList.remove("run")},1000)}
 function comboHitPop(){el.comboBox.classList.remove("hit");void el.comboBox.offsetWidth;el.comboBox.classList.add("hit")}
 function centerX(){return el.board.clientWidth/2-29}
@@ -302,7 +370,23 @@ update()
 
 function healLife(){if(lives<5){lives++;show("体力回復！");renderCat("level")}else{score+=80;show("体力満タン +80")}}
 function gainFood(){food++;if(food>=needFood){food-=needFood;needFood+=2;show("猫が成長！");renderCat("level")}else show("猫缶 "+food+"/"+needFood)}
-function openGift(){var card=catCards[Math.floor(Math.random()*catCards.length)];if(collection[card.name]){score+=50;show("重複！猫缶+1");gainFood()}else{collection[card.name]=true;selectedCatName=card.name;saveData();saveSkin();renderCat("");show(card.name+" GET!")}renderBook()}
+function openGift(){
+var card=catCards[Math.floor(Math.random()*catCards.length)];
+if(collection[card.name]){
+score+=50;
+show("重複！猫缶+1");
+gainFood()
+}else{
+collection[card.name]=true;
+selectedCatName=card.name;
+saveData();
+saveSkin();
+renderCat("");
+showSkinGet(card);
+show(card.name+" GET!")
+}
+renderBook()
+}
 
 function judge(a){
 a=normAnswer(a);
@@ -376,7 +460,7 @@ running=true;
 paused=false;
 judging=false;
 resetBgm();
-rawPlayBgm();
+kickBgm();
 cancelAnimationFrame(loopId);
 clearAliens();
 score=0;
@@ -392,7 +476,7 @@ chains={cat:[],gator:[]};
 itemBag=[];
 v=boss()[3];
 gatorHp=boss()[2];
-giftAllowed=Math.random()<.5;
+giftAllowed=Math.random()<.05;
 giftDropped=false;
 nextAlienAt=Date.now()+2200;
 startClock=Date.now();
@@ -453,12 +537,13 @@ manualStopAudio=false;
 running=true;
 paused=false;
 resetBgm();
-rawPlayBgm()
+kickBgm()
 }
 fn()
 }
 b.onclick=run;
-b.ontouchstart=run
+b.ontouchstart=run;
+b.onpointerdown=run
 }
 
 function bootGame(){
