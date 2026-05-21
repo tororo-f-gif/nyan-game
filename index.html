@@ -13,6 +13,58 @@ body{margin:0;background:linear-gradient(#ffe08a,#21142f);font-family:sans-serif
 #feverBg:before{content:"FEVER";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:1000;color:#fff;text-shadow:2px 2px #000,0 0 9px #ff4f93;letter-spacing:2px}
 #feverBg:after{content:"";position:absolute;inset:-16px;background:radial-gradient(circle at 10% 40%,#fff 0 1px,transparent 3px),radial-gradient(circle at 22% 66%,#ffd84a 0 2px,transparent 4px),radial-gradient(circle at 42% 35%,#fff 0 2px,transparent 4px),radial-gradient(circle at 62% 62%,#ffb7ff 0 1px,transparent 3px),radial-gradient(circle at 82% 30%,#fff 0 2px,transparent 4px),radial-gradient(circle at 94% 55%,#ffd84a 0 1px,transparent 3px);opacity:.65}
 @keyframes feverSweep{0%{left:-135%;opacity:0}14%{opacity:.9}78%{opacity:.9}100%{left:110%;opacity:0}}
+
+#skinGetBanner{
+position:absolute;
+left:50%;
+top:20%;
+transform:translateX(-50%);
+z-index:999;
+background:linear-gradient(90deg,#ff0077,#ffcc00,#ffffff,#ffcc00,#ff0077);
+border:4px solid #fff;
+border-radius:22px;
+padding:14px 22px;
+font-size:20px;
+font-weight:1000;
+color:#fff;
+text-shadow:3px 3px #000,0 0 12px #ff4f93;
+box-shadow:0 0 18px #fff,0 0 35px #ffd84a,0 0 55px #ff4f93;
+text-align:center;
+white-space:nowrap;
+pointer-events:none;
+}
+#skinGetBanner:before{
+content:"✨✨✨";
+position:absolute;
+left:50%;
+top:-28px;
+transform:translateX(-50%);
+font-size:26px;
+animation:skinSpark .35s infinite alternate;
+}
+#skinGetBanner:after{
+content:"✨✨✨";
+position:absolute;
+left:50%;
+bottom:-30px;
+transform:translateX(-50%);
+font-size:26px;
+animation:skinSpark .35s infinite alternate-reverse;
+}
+#skinGetBanner.show{animation:skinGetPop 1.8s ease-out forwards}
+@keyframes skinGetPop{
+0%{opacity:0;transform:translateX(-50%) scale(.35) rotate(-8deg)}
+12%{opacity:1;transform:translateX(-50%) scale(1.25) rotate(5deg)}
+24%{transform:translateX(-50%) scale(.95) rotate(-3deg)}
+38%{transform:translateX(-50%) scale(1.08) rotate(2deg)}
+75%{opacity:1;transform:translateX(-50%) scale(1) rotate(0)}
+100%{opacity:0;transform:translateX(-50%) scale(.85) rotate(0)}
+}
+@keyframes skinSpark{
+from{opacity:.55;filter:drop-shadow(0 0 4px #fff)}
+to{opacity:1;filter:drop-shadow(0 0 14px #ffd84a)}
+}
+
 #top{position:absolute;left:8px;right:8px;top:6px;height:34px;padding:2px;background:#2a183cee;border:1.5px solid #fff;border-radius:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;text-align:center;z-index:100}
 .box{background:#130b1eee;border:1px solid #fff;border-radius:6px;padding:1px;font-weight:900;font-size:7px;line-height:1}
 .box span{display:block;color:#ffd84a;font-size:12px;text-shadow:1px 1px #000;margin-top:0}
@@ -68,90 +120,149 @@ button:active{transform:translateY(2px);box-shadow:0 2px #0008}
 </style>
 </head>
 <body>
-<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+<audio id="bgm" src="bgm.mp3" loop preload="auto" playsinline></audio>
 
 <div id="game">
-  <div id="feverBg"></div>
-  <div id="top">
-    <div class="box">スコア<span id="score">0</span></div>
-    <div class="box">ワニ<span id="stageNum">1</span></div>
-    <div class="box">時間<span id="timeTop">0.00</span></div>
-  </div>
-  <div id="comboBox"><b>HIT COMBO</b><span>0</span><i>HIT</i><em>x1.0</em></div>
-  <div id="factorySource"></div>
-  <div id="timer">待機中</div>
-  <div id="board">
-    <div id="catLife">❤️❤️❤️❤️❤️</div>
-    <div id="cat">😺</div>
-    <div id="gator">🐊</div>
-    <div id="gatorHpText">HP</div>
-    <div id="gatorHpBox"><div id="gatorHpBar"></div></div>
-    <div id="stageName">第1ワニ：ちびワニ</div>
-    <div id="player">🐟</div>
-    <div id="catChain" class="chain catChain"></div>
-    <div id="gatorChain" class="chain gatorChain"></div>
-    <div id="catZone" class="zone">🐱</div>
-    <div id="gatorZone" class="zone">🐊</div>
-  </div>
-  <div id="msg"></div>
-  <div id="controls">
-    <button id="catBtn" type="button">左</button>
-    <button id="gatorBtn" type="button">右</button>
-  </div>
-  <div id="guide">🐟🧶🥫🎁❤️は左　💣🪨は右のワニへ</div>
+<div id="feverBg"></div>
+<div id="skinGetBanner" class="hidden"></div>
+<div id="top">
+<div class="box">スコア<span id="score">0</span></div>
+<div class="box">ワニ<span id="stageNum">1</span></div>
+<div class="box">時間<span id="timeTop">0.00</span></div>
+</div>
+<div id="comboBox"><b>HIT COMBO</b><span>0</span><i>HIT</i><em>x1.0</em></div>
+<div id="factorySource"></div>
+<div id="timer">待機中</div>
+<div id="board">
+<div id="catLife">❤️❤️❤️❤️❤️</div>
+<div id="cat">😺</div>
+<div id="gator">🐊</div>
+<div id="gatorHpText">HP</div>
+<div id="gatorHpBox"><div id="gatorHpBar"></div></div>
+<div id="stageName">第1ワニ：ちびワニ</div>
+<div id="player">🐟</div>
+<div id="catChain" class="chain catChain"></div>
+<div id="gatorChain" class="chain gatorChain"></div>
+<div id="catZone" class="zone">🐱</div>
+<div id="gatorZone" class="zone">🐊</div>
+</div>
+<div id="msg"></div>
+<div id="controls">
+<button id="catBtn" type="button">左</button>
+<button id="gatorBtn" type="button">右</button>
+</div>
+<div id="guide">🐟🧶🥫🎁❤️は左　💣🪨は右のワニへ</div>
 
-  <div id="startScreen" class="overlay">
-    <div class="panel">
-      <h1>にゃんこ<br>落ち物仕分けDX</h1>
-      <p>上の配送口から流れてくる落ち物を仕分けよう。</p>
-      <p>魚・毛糸・猫缶・プレゼント・回復は左。<br>爆弾・石は右のワニへ。</p>
-      <p>集めた猫スキンは猫図鑑から変更できます。</p>
-      <button id="startBtn" class="startBtn" type="button">スタート</button>
-      <button id="startBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-    </div>
-  </div>
+<div id="startScreen" class="overlay">
+<div class="panel">
+<h1>にゃんこ<br>落ち物仕分けDX</h1>
+<p>上の配送口から流れてくる落ち物を仕分けよう。</p>
+<p>魚・毛糸・猫缶・プレゼント・回復は左。<br>爆弾・石は右のワニへ。</p>
+<p>集めた猫スキンは猫図鑑から変更できます。</p>
+<button id="startBtn" class="startBtn" type="button">スタート</button>
+<button id="startBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
+</div>
+</div>
 
-  <div id="gameoverScreen" class="overlay hidden">
-    <div class="panel">
-      <span class="oldMan">⚡👴🏿⚡</span>
-      <h1>脳年齢診断</h1>
-      <p>変なオッサン「あなたの脳年齢は……」</p>
-      <div id="brainAge" class="brainAge">--歳</div>
-      <p id="finalScore">スコア：0</p>
-      <button id="retryBtn" class="startBtn" type="button">もう一回</button>
-      <button id="gameoverBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-    </div>
-  </div>
+<div id="gameoverScreen" class="overlay hidden">
+<div class="panel">
+<span class="oldMan">⚡👴🏿⚡</span>
+<h1>脳年齢診断</h1>
+<p>変なオッサン「あなたの脳年齢は……」</p>
+<div id="brainAge" class="brainAge">--歳</div>
+<p id="finalScore">スコア：0</p>
+<button id="retryBtn" class="startBtn" type="button">もう一回</button>
+<button id="gameoverBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
+</div>
+</div>
 
-  <div id="bookScreen" class="overlay hidden">
-    <div class="panel">
-      <button id="closeBookBtn" class="subBtn" type="button">ゲームに戻る</button>
-      <h1>猫カード図鑑</h1>
-      <p id="bookCount">0 / 7</p>
-      <div id="bookList"></div>
-    </div>
-  </div>
+<div id="bookScreen" class="overlay hidden">
+<div class="panel">
+<button id="closeBookBtn" class="subBtn" type="button">ゲームに戻る</button>
+<h1>猫カード図鑑</h1>
+<p id="bookCount">0 / 7</p>
+<div id="bookList"></div>
+</div>
+</div>
 </div>
 
 <script>
 var score=0,stage=1,lives=5,food=0,needFood=3,startClock=0,combo=0,maxCombo=0,fever=false,feverEnd=0,coin=0,running=false,paused=false,judging=false,current=null,x=0,y=0,v=.95,loopId=null,chains={cat:[],gator:[]},itemBag=[],aliens=[],nextAlienAt=0,chaosVX=0,chaosTick=0,giftAllowed=false,giftDropped=false,gatorHp=90,gatorMaxHp=90;
-var feverFxTimer=null,bgmStarted=false;
+var feverFxTimer=null,bgmStarted=false,manualStopAudio=false,bgmKickTimer=null;
 var selectedCatName=localStorage.getItem("nyankoSelectedCat")||"ノーマル猫",collection={};
 var catCards=[{emoji:"😺",name:"ノーマル猫"},{emoji:"😸",name:"ごきげん猫"},{emoji:"😼",name:"ボス猫"},{emoji:"🥷",name:"忍者猫"},{emoji:"🚀",name:"宇宙猫"},{emoji:"🦁",name:"ライオン猫"},{emoji:"👑",name:"王様猫"}];
 var bosses=[["🐊","第1ワニ：ちびワニ",90,.95],["🐊","第2ワニ：ふつうワニ",130,1.1],["🐊","第3ワニ：かたいワニ",180,1.25],["🐊","第4ワニ：怒りワニ",240,1.42],["🐊","第5ワニ：鉄ワニ",320,1.6],["🦎","第6ワニ：変異ワニ",430,1.82],["🐲","第7ワニ：竜ワニ",560,2.05],["🐉","第8ワニ：火炎ワニ",720,2.3],["🦖","第9ワニ：恐竜ワニ",920,2.58],["🦕","第10ワニ：古代ワニ",1180,2.88],["👹","第11ワニ：鬼ワニ",1500,3.2],["👺","第12ワニ：天狗ワニ",1900,3.55],["💀","第13ワニ：骨ワニ",2400,3.92],["☠️","第14ワニ：呪いワニ",3050,4.32],["👾","第15ワニ：宇宙ワニ",3900,4.75],["🛸","第16ワニ：UFOワニ",5000,5.2],["🔥","第17ワニ：炎神ワニ",6500,5.7],["⚡","第18ワニ：雷神ワニ",8500,6.25],["🌋","第19ワニ：火山ワニ",11200,6.85],["🌌","第20ワニ：銀河ワニ",15000,7.5],["👑","第21ワニ：猫神を喰う神",22000,8.2]];
 var items=[{e:"🐟",a:"cat",p:10},{e:"🧶",a:"cat",p:15},{e:"🥫",a:"cat",p:8,food:true},{e:"🎁",a:"cat",p:50,gift:true},{e:"❤️",a:"cat",p:5,heal:true},{e:"💣",a:"gator",p:12,damage:24},{e:"🪨",a:"gator",p:10,damage:18}];
 var mergeMap={"🐟":"🐠","🐠":"🐡","🐡":"CLEAR","🧶":"🧸","🧸":"🎀","🎀":"CLEAR","🥫":"🍖","🍖":"🍗","🍗":"CLEAR","🎁":"💎","💎":"🏆","🏆":"CLEAR","❤️":"💖","💖":"💝","💝":"CLEAR","💣":"🧨","🧨":"🔥","🔥":"CLEAR","🪨":"🪙","🪙":"💰","💰":"CLEAR"};
 var el={};
+
 function $(id){return document.getElementById(id)}
-function initEls(){["score","stageNum","timeTop","catLife","comboBox","feverBg","stageName","timer","board","cat","gator","gatorHpText","gatorHpBar","player","catChain","gatorChain","msg","catBtn","gatorBtn","startScreen","gameoverScreen","bookScreen","startBtn","startBookBtn","retryBtn","gameoverBookBtn","closeBookBtn","brainAge","finalScore","bookCount","bookList"].forEach(function(id){el[id]=$(id)})}
-function playBgm(){var bgm=$("bgm");if(!bgm)return;bgm.volume=.35;bgm.play().then(function(){bgmStarted=true}).catch(function(){})}
-function stopBgm(){var bgm=$("bgm");if(!bgm)return;bgm.pause();bgm.currentTime=0;bgmStarted=false}
+
+function initEls(){
+["score","stageNum","timeTop","catLife","comboBox","feverBg","stageName","timer","board","cat","gator","gatorHpText","gatorHpBar","player","catChain","gatorChain","msg","catBtn","gatorBtn","startScreen","gameoverScreen","bookScreen","startBtn","startBookBtn","retryBtn","gameoverBookBtn","closeBookBtn","brainAge","finalScore","bookCount","bookList"].forEach(function(id){el[id]=$(id)})
+}
+
+function rawPlayBgm(){
+var bgm=$("bgm");
+if(!bgm)return;
+bgm.volume=.45;
+bgm.muted=false;
+bgm.playsInline=true;
+var p=bgm.play();
+if(p&&p.then){p.then(function(){bgmStarted=true}).catch(function(){})}
+}
+
+function playBgm(){
+if(!running||paused||manualStopAudio)return;
+rawPlayBgm()
+}
+
+function kickBgm(){
+clearTimeout(bgmKickTimer);
+rawPlayBgm();
+bgmKickTimer=setTimeout(function(){if(running&&!paused&&!manualStopAudio)rawPlayBgm()},120)
+}
+
+function stopBgm(){
+var bgm=$("bgm");
+if(!bgm)return;
+bgm.pause();
+bgmStarted=false;
+}
+
+function resetBgm(){
+var bgm=$("bgm");
+if(!bgm)return;
+bgm.pause();
+try{bgm.currentTime=0}catch(e){}
+bgmStarted=false;
+}
+
+document.addEventListener("visibilitychange",function(){
+if(document.hidden){stopBgm()}else{if(running&&!paused&&!manualStopAudio)playBgm()}
+});
+window.addEventListener("pagehide",function(){stopBgm()});
+window.addEventListener("blur",function(){stopBgm()});
+window.addEventListener("beforeunload",function(){stopBgm()});
+window.addEventListener("freeze",function(){stopBgm()});
+window.addEventListener("pageshow",function(){if(running&&!paused&&!manualStopAudio)playBgm()});
+window.addEventListener("focus",function(){if(running&&!paused&&!manualStopAudio)playBgm()});
+
 function loadData(){try{collection=JSON.parse(localStorage.getItem("nyankoCollection")||"{}")}catch(e){collection={}}collection["ノーマル猫"]=true;if(!collection[selectedCatName])selectedCatName="ノーマル猫"}
 function saveData(){localStorage.setItem("nyankoCollection",JSON.stringify(collection))}
 function saveSkin(){localStorage.setItem("nyankoSelectedCat",selectedCatName)}
 function selectedEmoji(){var c=catCards.find(function(x){return x.name===selectedCatName});return c?c.emoji:"😺"}
 function renderCat(face){var badge="";if(face==="good")badge="😸";if(face==="miss")badge="🙀";if(face==="level")badge="😻";if(face==="angry")badge="😾";el.cat.innerHTML="<span>"+selectedEmoji()+"</span>"+(badge?'<span class="faceBadge">'+badge+"</span>":"");if(face){clearTimeout(window.catFaceTimer);window.catFaceTimer=setTimeout(function(){renderCat("")},520)}}
 function show(t){el.msg.textContent=t;el.msg.style.opacity="1";clearTimeout(window.msgTimer);window.msgTimer=setTimeout(function(){el.msg.style.opacity="0"},650)}
+function showSkinGet(card){
+var b=$("skinGetBanner");
+if(!b)return;
+b.innerHTML="🎁✨超レア猫スキンGET！✨<br>"+card.emoji+" "+card.name;
+b.classList.remove("hidden","show");
+void b.offsetWidth;
+b.classList.add("show");
+setTimeout(function(){b.classList.add("hidden");b.classList.remove("show")},1900)
+}
 function feverSweep(){el.feverBg.classList.remove("run");void el.feverBg.offsetWidth;el.feverBg.classList.add("run");clearTimeout(feverFxTimer);feverFxTimer=setTimeout(function(){el.feverBg.classList.remove("run")},1000)}
 function comboHitPop(){el.comboBox.classList.remove("hit");void el.comboBox.offsetWidth;el.comboBox.classList.add("hit")}
 function centerX(){return el.board.clientWidth/2-29}
@@ -171,32 +282,289 @@ function addCombo(){combo++;if(combo>maxCombo)maxCombo=combo;if(combo>0&&combo%1
 function resetCombo(){combo=0;fever=false;updateCombo();comboHitPop()}
 function update(){el.score.textContent=score;el.stageNum.textContent=stage;if(el.timeTop)el.timeTop.textContent=getPlayTime();if(el.catLife)el.catLife.textContent="❤️".repeat(Math.max(0,lives))+"🖤".repeat(Math.max(0,5-lives));updateHp();updateCombo()}
 function updateTimer(){el.timer.textContent="";el.timer.style.display="none"}
-function refillBag(){itemBag=[items[0],items[0],items[1],items[1],items[2],items[5],items[5],items[6],items[6]];if(score>=1200)itemBag.push(items[0],items[1],items[5],items[6]);if(score>=2500)itemBag.push(items[2],items[5],items[6]);if(score>=7000)itemBag.push(items[5],items[6]);if(score>=1200){var healRate=lives<5?.32:.10;if(Math.random()<healRate)itemBag.push(items[4])}if(giftAllowed&&!giftDropped&&score>=12000&&Math.random()<.35)itemBag.push(items[3]);if(giftAllowed&&!giftDropped&&score>=50000&&Math.random()<.35)itemBag.push(items[3]);for(var i=itemBag.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=itemBag[i];itemBag[i]=itemBag[j];itemBag[j]=tmp}}
+
+function refillBag(){
+itemBag=[items[0],items[0],items[1],items[1],items[2],items[5],items[5],items[6],items[6]];
+if(score>=1200)itemBag.push(items[0],items[1],items[5],items[6]);
+if(score>=2500)itemBag.push(items[2],items[5],items[6]);
+if(score>=7000)itemBag.push(items[5],items[6]);
+if(score>=1200){var healRate=lives<5?.32:.10;if(Math.random()<healRate)itemBag.push(items[4])}
+if(giftAllowed&&!giftDropped&&score>=12000&&Math.random()<.35)itemBag.push(items[3]);
+if(giftAllowed&&!giftDropped&&score>=50000&&Math.random()<.35)itemBag.push(items[3]);
+for(var i=itemBag.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=itemBag[i];itemBag[i]=itemBag[j];itemBag[j]=tmp}
+}
+
 function pickItem(){if(itemBag.length===0)refillBag();var p=itemBag.pop();if(p&&p.gift)giftDropped=true;return p}
 function clearAliens(){aliens.forEach(function(a){a.el.remove()});aliens=[]}
-function spawnAlienMaybe(){if(!running||paused)return;checkFever();if(Date.now()<nextAlienAt)return;if(stage<2){nextAlienAt=Date.now()+2600;return}var count=Math.min(2+Math.floor(stage/3),7),pool=["👽","🛸","☄️","🛰️","👾","🦠","⚡","💀"];for(var s=0;s<count;s++){var d=document.createElement("div");d.className="alien";d.textContent=pool[Math.floor(Math.random()*pool.length)];var size=Math.min(120,38+stage*4+Math.random()*20);d.style.fontSize=size+"px";var fromLeft=Math.random()<.5,ax=fromLeft?-120:el.board.clientWidth+120,ay=95+Math.random()*Math.max(70,el.board.clientHeight-315);aliens.push({el:d,x:ax,y:ay,dir:fromLeft?1:-1,speed:3.6+stage*.52+Math.random()*(3.2+stage*.18),hit:46+stage*3+Math.random()*18});d.style.left=ax+"px";d.style.top=ay+"px";el.board.appendChild(d)}nextAlienAt=Date.now()+Math.max(180,1600-stage*85)+Math.random()*Math.max(260,1150-stage*38)}
-function moveAliens(){var px=x+36,py=y+36;aliens=aliens.filter(function(a){a.x+=a.dir*a.speed;a.y+=Math.sin(Date.now()/120+a.x*.01)*.9;a.el.style.left=a.x+"px";a.el.style.top=a.y+"px";var cx=a.x+28,cy=a.y+28;if(Math.abs(px-cx)<a.hit&&Math.abs(py-cy)<a.hit){score=Math.max(0,score-(60+stage*18));show(a.el.textContent+" じゃま！");renderCat("angry");a.el.remove();update();return false}if(a.x<-180||a.x>el.board.clientWidth+180){a.el.remove();return false}return true})}
+
+function spawnAlienMaybe(){
+if(!running||paused)return;
+checkFever();
+if(Date.now()<nextAlienAt)return;
+if(stage<2){nextAlienAt=Date.now()+2600;return}
+var count=Math.min(2+Math.floor(stage/3),7),pool=["👽","🛸","☄️","🛰️","👾","🦠","⚡","💀"];
+for(var s=0;s<count;s++){
+var d=document.createElement("div");
+d.className="alien";
+d.textContent=pool[Math.floor(Math.random()*pool.length)];
+var size=Math.min(120,38+stage*4+Math.random()*20);
+d.style.fontSize=size+"px";
+var fromLeft=Math.random()<.5,ax=fromLeft?-120:el.board.clientWidth+120,ay=95+Math.random()*Math.max(70,el.board.clientHeight-315);
+aliens.push({el:d,x:ax,y:ay,dir:fromLeft?1:-1,speed:3.6+stage*.52+Math.random()*(3.2+stage*.18),hit:46+stage*3+Math.random()*18});
+d.style.left=ax+"px";
+d.style.top=ay+"px";
+el.board.appendChild(d)
+}
+nextAlienAt=Date.now()+Math.max(180,1600-stage*85)+Math.random()*Math.max(260,1150-stage*38)
+}
+
+function moveAliens(){
+var px=x+36,py=y+36;
+aliens=aliens.filter(function(a){
+a.x+=a.dir*a.speed;
+a.y+=Math.sin(Date.now()/120+a.x*.01)*.9;
+a.el.style.left=a.x+"px";
+a.el.style.top=a.y+"px";
+var cx=a.x+28,cy=a.y+28;
+if(Math.abs(px-cx)<a.hit&&Math.abs(py-cy)<a.hit){
+score=Math.max(0,score-(60+stage*18));
+show(a.el.textContent+" じゃま！");
+renderCat("angry");
+a.el.remove();
+update();
+return false
+}
+if(a.x<-180||a.x>el.board.clientWidth+180){a.el.remove();return false}
+return true
+})
+}
+
 function renderChains(){el.catChain.textContent=chains.cat.join("");el.gatorChain.textContent=chains.gator.join("")}
 function addChain(a,emoji){a=normAnswer(a);if(!chains[a])chains[a]=[];chains[a].push(emoji);if(chains[a].length>8)chains[a].shift();checkChain(a);renderChains()}
 function checkChain(a){var arr=chains[a],changed=true;while(changed){changed=false;var counts={};arr.forEach(function(e){counts[e]=(counts[e]||0)+1});for(var item in counts){if(counts[item]>=2){arr.splice(arr.indexOf(item),1);arr.splice(arr.indexOf(item),1);var m=mergeMap[item];if(m==="CLEAR"){score+=500*stage;show(item+"×2 消滅！+"+(500*stage))}else{arr.push(m);score+=120*stage;show(item+"×2 → "+m)}changed=true;break}}}update()}
-function damageGator(dmg){dmg=Math.floor(dmg*(fever?2:1));gatorHp-=dmg;el.gator.style.transform="translateX(-50%) scale(1.18)";setTimeout(function(){el.gator.style.transform="translateX(-50%) scale(1)"},120);show("🐊に"+dmg+"ダメージ！");if(gatorHp<=0){var reward=500*stage+combo*20;coin+=stage*10;score+=reward;if(stage<21){stage++;v=boss()[3];gatorHp=boss()[2];updateBoss();updateHp()}else{gatorHp=boss()[2]}}update()}
+
+function damageGator(dmg){
+dmg=Math.floor(dmg*(fever?2:1));
+gatorHp-=dmg;
+el.gator.style.transform="translateX(-50%) scale(1.18)";
+setTimeout(function(){el.gator.style.transform="translateX(-50%) scale(1)"},120);
+show("🐊に"+dmg+"ダメージ！");
+if(gatorHp<=0){
+var reward=500*stage+combo*20;
+coin+=stage*10;
+score+=reward;
+if(stage<21){
+stage++;
+v=boss()[3];
+gatorHp=boss()[2];
+updateBoss();
+updateHp()
+}else{
+show("全クリ！");
+endGame();
+return
+}
+}
+update()
+}
+
 function healLife(){if(lives<5){lives++;show("体力回復！");renderCat("level")}else{score+=80;show("体力満タン +80")}}
 function gainFood(){food++;if(food>=needFood){food-=needFood;needFood+=2;show("猫が成長！");renderCat("level")}else show("猫缶 "+food+"/"+needFood)}
-function openGift(){var card=catCards[Math.floor(Math.random()*catCards.length)];if(collection[card.name]){score+=50;show("重複！猫缶+1");gainFood()}else{collection[card.name]=true;selectedCatName=card.name;saveData();saveSkin();renderCat("");show(card.name+" GET!")}renderBook()}
-function judge(a){a=normAnswer(a);var correct=normAnswer(current.a);if(a===correct){addCombo();var add=Math.floor(current.p*stage*comboRate());score+=add;renderCat("good");addChain(a,current.e);if(current.food)gainFood();if(current.heal)healLife();if(current.gift)openGift();if(current.damage)damageGator(current.damage+stage*6)}else{resetCombo();lives--;score=Math.max(0,score-30);show("MISS! 残り"+lives);renderCat("miss");if(lives<=0){endGame();return}}update();setTimeout(spawn,150)}
-function choose(a){a=normAnswer(a);if(!running||paused||judging||!current)return;judging=true;x=laneX(a);y=fallBottom();place();setTimeout(function(){judge(a)},100)}
+function openGift(){
+var card=catCards[Math.floor(Math.random()*catCards.length)];
+if(collection[card.name]){
+score+=50;
+show("重複！猫缶+1");
+gainFood()
+}else{
+collection[card.name]=true;
+selectedCatName=card.name;
+saveData();
+saveSkin();
+renderCat("");
+showSkinGet(card);
+show(card.name+" GET!")
+}
+renderBook()
+}
+
+function judge(a){
+a=normAnswer(a);
+var correct=normAnswer(current.a);
+if(a===correct){
+addCombo();
+var add=Math.floor(current.p*stage*comboRate());
+score+=add;
+renderCat("good");
+addChain(a,current.e);
+if(current.food)gainFood();
+if(current.heal)healLife();
+if(current.gift)openGift();
+if(current.damage)damageGator(current.damage+stage*6)
+}else{
+resetCombo();
+lives--;
+score=Math.max(0,score-30);
+show("MISS! 残り"+lives);
+renderCat("miss");
+if(lives<=0){endGame();return}
+}
+update();
+setTimeout(spawn,150)
+}
+
+function choose(a){
+a=normAnswer(a);
+if(!running||paused||judging||!current)return;
+playBgm();
+judging=true;
+x=laneX(a);
+y=fallBottom();
+place();
+setTimeout(function(){judge(a)},100)
+}
+
 function place(){el.player.style.left=x+"px";el.player.style.top=y+"px"}
 function spawn(){if(!running||paused)return;judging=true;current=null;el.player.textContent="？";el.player.style.opacity="0";x=(stage===21)?8+Math.random()*(el.board.clientWidth-88):centerX();y=fallTop();place();setTimeout(function(){if(!running||paused)return;current=pickItem();el.player.textContent=current.e;el.player.style.opacity="1";judging=false},stage===21?50:120)}
-function loop(){if(!running)return;if(paused){if(el.timeTop)el.timeTop.textContent=getPlayTime();loopId=requestAnimationFrame(loop);return}if(stage===21){chaosTick++;if(chaosTick%10===0){v=8.5+Math.random()*5.5;chaosVX=Math.random()*4.8-2.4}x+=chaosVX;if(x<6)x=6;if(x>el.board.clientWidth-78)x=el.board.clientWidth-78}spawnAlienMaybe();moveAliens();y+=v;place();if(el.timeTop)el.timeTop.textContent=getPlayTime();if(!judging&&y>fallBottom()){judging=true;lives--;show("時間切れ！ 残り"+lives);renderCat("angry");if(lives<=0){endGame();return}update();setTimeout(spawn,230)}loopId=requestAnimationFrame(loop)}
-function startGame(){playBgm();cancelAnimationFrame(loopId);clearAliens();score=0;stage=1;lives=5;food=0;needFood=3;combo=0;maxCombo=0;fever=false;coin=0;chains={cat:[],gator:[]};itemBag=[];v=boss()[3];gatorHp=boss()[2];giftAllowed=Math.random()<.5;giftDropped=false;nextAlienAt=Date.now()+2200;running=true;paused=false;judging=false;startClock=Date.now();el.startScreen.classList.add("hidden");el.gameoverScreen.classList.add("hidden");el.bookScreen.classList.add("hidden");el.feverBg.classList.remove("run");renderCat("");updateBoss();updateHp();renderChains();update();spawn();loop()}
+
+function loop(){
+if(!running)return;
+if(paused){if(el.timeTop)el.timeTop.textContent=getPlayTime();loopId=requestAnimationFrame(loop);return}
+if(stage===21){
+chaosTick++;
+if(chaosTick%10===0){v=8.5+Math.random()*5.5;chaosVX=Math.random()*4.8-2.4}
+x+=chaosVX;
+if(x<6)x=6;
+if(x>el.board.clientWidth-78)x=el.board.clientWidth-78
+}
+spawnAlienMaybe();
+moveAliens();
+y+=v;
+place();
+if(el.timeTop)el.timeTop.textContent=getPlayTime();
+if(!judging&&y>fallBottom()){
+judging=true;
+lives--;
+show("時間切れ！ 残り"+lives);
+renderCat("angry");
+if(lives<=0){endGame();return}
+update();
+setTimeout(spawn,230)
+}
+loopId=requestAnimationFrame(loop)
+}
+
+function startGame(){
+manualStopAudio=false;
+running=true;
+paused=false;
+judging=false;
+resetBgm();
+kickBgm();
+cancelAnimationFrame(loopId);
+clearAliens();
+score=0;
+stage=1;
+lives=5;
+food=0;
+needFood=3;
+combo=0;
+maxCombo=0;
+fever=false;
+coin=0;
+chains={cat:[],gator:[]};
+itemBag=[];
+v=boss()[3];
+gatorHp=boss()[2];
+giftAllowed=Math.random()<.05;
+giftDropped=false;
+nextAlienAt=Date.now()+2200;
+startClock=Date.now();
+el.startScreen.classList.add("hidden");
+el.gameoverScreen.classList.add("hidden");
+el.bookScreen.classList.add("hidden");
+el.feverBg.classList.remove("run");
+renderCat("");
+updateBoss();
+updateHp();
+renderChains();
+update();
+spawn();
+loop()
+}
+
 function brainAge(){var age=80-Math.floor(score/3500)-stage;if(score<1000)age=88+Math.floor(Math.random()*8);if(age<18)age=18;if(age>99)age=99;return age}
-function endGame(){running=false;paused=false;judging=true;cancelAnimationFrame(loopId);clearAliens();stopBgm();el.brainAge.textContent=brainAge()+"歳";el.finalScore.textContent="スコア："+score+" / 最大コンボ："+maxCombo+" / ワニ："+stage+" / 図鑑："+ownedCount()+"/7";el.gameoverScreen.classList.remove("hidden")}
+
+function endGame(){
+running=false;
+paused=false;
+judging=true;
+manualStopAudio=true;
+cancelAnimationFrame(loopId);
+clearAliens();
+resetBgm();
+el.brainAge.textContent=brainAge()+"歳";
+el.finalScore.textContent="スコア："+score+" / 最大コンボ："+maxCombo+" / ワニ："+stage+" / 図鑑："+ownedCount()+"/7";
+el.gameoverScreen.classList.remove("hidden")
+}
+
 function ownedCount(){return catCards.filter(function(c){return collection[c.name]}).length}
 function renderBook(){el.bookList.innerHTML="";el.bookCount.textContent=ownedCount()+" / "+catCards.length;catCards.forEach(function(card){var owned=collection[card.name],div=document.createElement("div");div.className="card"+(owned?"":" locked")+(owned&&selectedCatName===card.name?" selectedSkin":"");div.innerHTML="<span class='emoji'>"+(owned?card.emoji:"？")+"</span><div>"+(owned?card.name:"未入手")+"</div>"+(owned&&selectedCatName===card.name?"<div class='skinNote'>使用中</div>":"");if(owned)div.onclick=function(){selectedCatName=card.name;saveSkin();renderCat("");renderBook();show("スキン変更！")};el.bookList.appendChild(div)})}
-function openBook(){renderBook();if(running&&!paused)paused=true;el.bookScreen.classList.remove("hidden")}
-function closeBook(){el.bookScreen.classList.add("hidden");if(running&&paused)paused=false}
-function bind(id,fn){var b=$(id);if(!b)return;b.onclick=function(e){e.preventDefault();e.stopPropagation();fn()};b.ontouchstart=function(e){e.preventDefault();e.stopPropagation();fn()}}
-function bootGame(){initEls();loadData();renderCat("");updateBoss();updateHp();renderBook();update();bind("startBtn",startGame);bind("retryBtn",startGame);bind("startBookBtn",openBook);bind("gameoverBookBtn",openBook);bind("closeBookBtn",closeBook);bind("catBtn",function(){choose("cat")});bind("gatorBtn",function(){choose("gator")})}
+
+function openBook(){
+renderBook();
+if(running&&!paused)paused=true;
+stopBgm();
+el.bookScreen.classList.remove("hidden")
+}
+
+function closeBook(){
+el.bookScreen.classList.add("hidden");
+if(running&&paused&&!manualStopAudio){
+paused=false;
+playBgm()
+}
+}
+
+function bind(id,fn){
+var b=$(id);
+if(!b)return;
+function run(e){
+e.preventDefault();
+e.stopPropagation();
+if(id==="startBtn"||id==="retryBtn"){
+manualStopAudio=false;
+running=true;
+paused=false;
+resetBgm();
+kickBgm()
+}
+fn()
+}
+b.onclick=run;
+b.ontouchstart=run;
+b.onpointerdown=run
+}
+
+function bootGame(){
+initEls();
+loadData();
+renderCat("");
+updateBoss();
+updateHp();
+renderBook();
+update();
+bind("startBtn",startGame);
+bind("retryBtn",startGame);
+bind("startBookBtn",openBook);
+bind("gameoverBookBtn",openBook);
+bind("closeBookBtn",closeBook);
+bind("catBtn",function(){choose("cat")});
+bind("gatorBtn",function(){choose("gator")});
+document.body.addEventListener("touchstart",function(){if(running&&!paused&&!manualStopAudio)playBgm()},{passive:true});
+document.body.addEventListener("click",function(){if(running&&!paused&&!manualStopAudio)playBgm()})
+}
+
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",bootGame)}else{bootGame()}
 </script>
 </body>
