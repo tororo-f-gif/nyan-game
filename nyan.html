@@ -68,86 +68,76 @@ button:active{transform:translateY(2px);box-shadow:0 2px #0008}
 </style>
 </head>
 <body>
-<audio id="bgm" src="./bgm.mp3" loop preload="auto" playsinline></audio>
+<audio id="bgm" src="bgm.mp3" loop preload="auto" playsinline></audio>
 
 <div id="game">
-  <div id="feverBg"></div>
-  <div id="top">
-    <div class="box">スコア<span id="score">0</span></div>
-    <div class="box">ワニ<span id="stageNum">1</span></div>
-    <div class="box">時間<span id="timeTop">0.00</span></div>
-  </div>
-  <div id="comboBox"><b>HIT COMBO</b><span>0</span><i>HIT</i><em>x1.0</em></div>
-  <div id="factorySource"></div>
-  <div id="timer">待機中</div>
-  <div id="board">
-    <div id="catLife">❤️❤️❤️❤️❤️</div>
-    <div id="cat">😺</div>
-    <div id="gator">🐊</div>
-    <div id="gatorHpText">HP</div>
-    <div id="gatorHpBox"><div id="gatorHpBar"></div></div>
-    <div id="stageName">第1ワニ：ちびワニ</div>
-    <div id="player">🐟</div>
-    <div id="catChain" class="chain catChain"></div>
-    <div id="gatorChain" class="chain gatorChain"></div>
-    <div id="catZone" class="zone">🐱</div>
-    <div id="gatorZone" class="zone">🐊</div>
-  </div>
-  <div id="msg"></div>
-  <div id="controls">
-    <button id="catBtn" type="button">左</button>
-    <button id="gatorBtn" type="button">右</button>
-  </div>
-  <div id="guide">🐟🧶🥫🎁❤️は左　💣🪨は右のワニへ</div>
+<div id="feverBg"></div>
+<div id="top">
+<div class="box">スコア<span id="score">0</span></div>
+<div class="box">ワニ<span id="stageNum">1</span></div>
+<div class="box">時間<span id="timeTop">0.00</span></div>
+</div>
+<div id="comboBox"><b>HIT COMBO</b><span>0</span><i>HIT</i><em>x1.0</em></div>
+<div id="factorySource"></div>
+<div id="timer">待機中</div>
+<div id="board">
+<div id="catLife">❤️❤️❤️❤️❤️</div>
+<div id="cat">😺</div>
+<div id="gator">🐊</div>
+<div id="gatorHpText">HP</div>
+<div id="gatorHpBox"><div id="gatorHpBar"></div></div>
+<div id="stageName">第1ワニ：ちびワニ</div>
+<div id="player">🐟</div>
+<div id="catChain" class="chain catChain"></div>
+<div id="gatorChain" class="chain gatorChain"></div>
+<div id="catZone" class="zone">🐱</div>
+<div id="gatorZone" class="zone">🐊</div>
+</div>
+<div id="msg"></div>
+<div id="controls">
+<button id="catBtn" type="button">左</button>
+<button id="gatorBtn" type="button">右</button>
+</div>
+<div id="guide">🐟🧶🥫🎁❤️は左　💣🪨は右のワニへ</div>
 
-  <div id="startScreen" class="overlay">
-    <div class="panel">
-      <h1>にゃんこ<br>落ち物仕分けDX</h1>
-      <p>上の配送口から流れてくる落ち物を仕分けよう。</p>
-      <p>魚・毛糸・猫缶・プレゼント・回復は左。<br>爆弾・石は右のワニへ。</p>
-      <p>集めた猫スキンは猫図鑑から変更できます。</p>
-      <button id="startBtn" class="startBtn" type="button">スタート</button>
-      <button id="startBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-    </div>
-  </div>
+<div id="startScreen" class="overlay">
+<div class="panel">
+<h1>にゃんこ<br>落ち物仕分けDX</h1>
+<p>上の配送口から流れてくる落ち物を仕分けよう。</p>
+<p>魚・毛糸・猫缶・プレゼント・回復は左。<br>爆弾・石は右のワニへ。</p>
+<p>集めた猫スキンは猫図鑑から変更できます。</p>
+<button id="startBtn" class="startBtn" type="button">スタート</button>
+<button id="startBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
+</div>
+</div>
 
-  <div id="gameoverScreen" class="overlay hidden">
-    <div class="panel">
-      <span class="oldMan">⚡👴🏿⚡</span>
-      <h1>脳年齢診断</h1>
-      <p>変なオッサン「あなたの脳年齢は……」</p>
-      <div id="brainAge" class="brainAge">--歳</div>
-      <p id="finalScore">スコア：0</p>
-      <button id="retryBtn" class="startBtn" type="button">もう一回</button>
-      <button id="gameoverBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-    </div>
-  </div>
+<div id="gameoverScreen" class="overlay hidden">
+<div class="panel">
+<span class="oldMan">⚡👴🏿⚡</span>
+<h1>脳年齢診断</h1>
+<p>変なオッサン「あなたの脳年齢は……」</p>
+<div id="brainAge" class="brainAge">--歳</div>
+<p id="finalScore">スコア：0</p>
+<button id="retryBtn" class="startBtn" type="button">もう一回</button>
+<button id="gameoverBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
+</div>
+</div>
 
-  <div id="bookScreen" class="overlay hidden">
-    <div class="panel">
-      <button id="closeBookBtn" class="subBtn" type="button">ゲームに戻る</button>
-      <h1>猫カード図鑑</h1>
-      <p id="bookCount">0 / 7</p>
-      <div id="bookList"></div>
-    </div>
-  </div>
+<div id="bookScreen" class="overlay hidden">
+<div class="panel">
+<button id="closeBookBtn" class="subBtn" type="button">ゲームに戻る</button>
+<h1>猫カード図鑑</h1>
+<p id="bookCount">0 / 7</p>
+<div id="bookList"></div>
+</div>
+</div>
 </div>
 
 <script>
 var score=0,stage=1,lives=5,food=0,needFood=3,startClock=0,combo=0,maxCombo=0,fever=false,feverEnd=0,coin=0,running=false,paused=false,judging=false,current=null,x=0,y=0,v=.95,loopId=null,chains={cat:[],gator:[]},itemBag=[],aliens=[],nextAlienAt=0,chaosVX=0,chaosTick=0,giftAllowed=false,giftDropped=false,gatorHp=90,gatorMaxHp=90;
 var feverFxTimer=null,bgmStarted=false,manualStopAudio=false;
 var selectedCatName=localStorage.getItem("nyankoSelectedCat")||"ノーマル猫",collection={};
-
-var catCards=[
-{emoji:"😺",name:"ノーマル猫"},
-{emoji:"😸",name:"ごきげん猫"},
-{emoji:"😼",name:"ボス猫"},
-{emoji:"🥷",name:"忍者猫"},
-{emoji:"🚀",name:"宇宙猫"},
-{emoji:"🦁",name:"ライオン猫"},
-{emoji:"👑",name:"王様猫"}
-];
-
+var catCards=[{emoji:"😺",name:"ノーマル猫"},{emoji:"😸",name:"ごきげん猫"},{emoji:"😼",name:"ボス猫"},{emoji:"🥷",name:"忍者猫"},{emoji:"🚀",name:"宇宙猫"},{emoji:"🦁",name:"ライオン猫"},{emoji:"👑",name:"王様猫"}];
 var bosses=[["🐊","第1ワニ：ちびワニ",90,.95],["🐊","第2ワニ：ふつうワニ",130,1.1],["🐊","第3ワニ：かたいワニ",180,1.25],["🐊","第4ワニ：怒りワニ",240,1.42],["🐊","第5ワニ：鉄ワニ",320,1.6],["🦎","第6ワニ：変異ワニ",430,1.82],["🐲","第7ワニ：竜ワニ",560,2.05],["🐉","第8ワニ：火炎ワニ",720,2.3],["🦖","第9ワニ：恐竜ワニ",920,2.58],["🦕","第10ワニ：古代ワニ",1180,2.88],["👹","第11ワニ：鬼ワニ",1500,3.2],["👺","第12ワニ：天狗ワニ",1900,3.55],["💀","第13ワニ：骨ワニ",2400,3.92],["☠️","第14ワニ：呪いワニ",3050,4.32],["👾","第15ワニ：宇宙ワニ",3900,4.75],["🛸","第16ワニ：UFOワニ",5000,5.2],["🔥","第17ワニ：炎神ワニ",6500,5.7],["⚡","第18ワニ：雷神ワニ",8500,6.25],["🌋","第19ワニ：火山ワニ",11200,6.85],["🌌","第20ワニ：銀河ワニ",15000,7.5],["👑","第21ワニ：猫神を喰う神",22000,8.2]];
 var items=[{e:"🐟",a:"cat",p:10},{e:"🧶",a:"cat",p:15},{e:"🥫",a:"cat",p:8,food:true},{e:"🎁",a:"cat",p:50,gift:true},{e:"❤️",a:"cat",p:5,heal:true},{e:"💣",a:"gator",p:12,damage:24},{e:"🪨",a:"gator",p:10,damage:18}];
 var mergeMap={"🐟":"🐠","🐠":"🐡","🐡":"CLEAR","🧶":"🧸","🧸":"🎀","🎀":"CLEAR","🥫":"🍖","🍖":"🍗","🍗":"CLEAR","🎁":"💎","💎":"🏆","🏆":"CLEAR","❤️":"💖","💖":"💝","💝":"CLEAR","💣":"🧨","🧨":"🔥","🔥":"CLEAR","🪨":"🪙","🪙":"💰","💰":"CLEAR"};
@@ -159,14 +149,19 @@ function initEls(){
 ["score","stageNum","timeTop","catLife","comboBox","feverBg","stageName","timer","board","cat","gator","gatorHpText","gatorHpBar","player","catChain","gatorChain","msg","catBtn","gatorBtn","startScreen","gameoverScreen","bookScreen","startBtn","startBookBtn","retryBtn","gameoverBookBtn","closeBookBtn","brainAge","finalScore","bookCount","bookList"].forEach(function(id){el[id]=$(id)})
 }
 
-function playBgm(){
-if(!running||paused||manualStopAudio)return;
+function rawPlayBgm(){
 var bgm=$("bgm");
 if(!bgm)return;
 bgm.volume=.45;
 bgm.muted=false;
 bgm.playsInline=true;
-bgm.play().then(function(){bgmStarted=true}).catch(function(){});
+var p=bgm.play();
+if(p&&p.then){p.then(function(){bgmStarted=true}).catch(function(){})}
+}
+
+function playBgm(){
+if(!running||paused||manualStopAudio)return;
+rawPlayBgm();
 }
 
 function stopBgm(){
@@ -185,13 +180,8 @@ bgmStarted=false;
 }
 
 document.addEventListener("visibilitychange",function(){
-if(document.hidden){
-stopBgm();
-}else{
-if(running&&!paused&&!manualStopAudio)playBgm()
-}
+if(document.hidden){stopBgm()}else{if(running&&!paused&&!manualStopAudio)playBgm()}
 });
-
 window.addEventListener("pagehide",function(){stopBgm()});
 window.addEventListener("blur",function(){stopBgm()});
 window.addEventListener("beforeunload",function(){stopBgm()});
@@ -276,10 +266,7 @@ a.el.remove();
 update();
 return false
 }
-if(a.x<-180||a.x>el.board.clientWidth+180){
-a.el.remove();
-return false
-}
+if(a.x<-180||a.x>el.board.clientWidth+180){a.el.remove();return false}
 return true
 })
 }
@@ -358,11 +345,7 @@ function spawn(){if(!running||paused)return;judging=true;current=null;el.player.
 
 function loop(){
 if(!running)return;
-if(paused){
-if(el.timeTop)el.timeTop.textContent=getPlayTime();
-loopId=requestAnimationFrame(loop);
-return
-}
+if(paused){if(el.timeTop)el.timeTop.textContent=getPlayTime();loopId=requestAnimationFrame(loop);return}
 if(stage===21){
 chaosTick++;
 if(chaosTick%10===0){v=8.5+Math.random()*5.5;chaosVX=Math.random()*4.8-2.4}
@@ -389,7 +372,11 @@ loopId=requestAnimationFrame(loop)
 
 function startGame(){
 manualStopAudio=false;
+running=true;
+paused=false;
+judging=false;
 resetBgm();
+rawPlayBgm();
 cancelAnimationFrame(loopId);
 clearAliens();
 score=0;
@@ -408,10 +395,6 @@ gatorHp=boss()[2];
 giftAllowed=Math.random()<.5;
 giftDropped=false;
 nextAlienAt=Date.now()+2200;
-running=true;
-paused=false;
-judging=false;
-playBgm();
 startClock=Date.now();
 el.startScreen.classList.add("hidden");
 el.gameoverScreen.classList.add("hidden");
@@ -459,8 +442,44 @@ playBgm()
 }
 }
 
-function bind(id,fn){var b=$(id);if(!b)return;b.onclick=function(e){e.preventDefault();e.stopPropagation();fn()};b.ontouchstart=function(e){e.preventDefault();e.stopPropagation();fn()}}
-function bootGame(){initEls();loadData();renderCat("");updateBoss();updateHp();renderBook();update();bind("startBtn",startGame);bind("retryBtn",startGame);bind("startBookBtn",openBook);bind("gameoverBookBtn",openBook);bind("closeBookBtn",closeBook);bind("catBtn",function(){choose("cat")});bind("gatorBtn",function(){choose("gator")});document.body.addEventListener("touchstart",function(){if(running&&!paused&&!manualStopAudio)playBgm()},{passive:true});document.body.addEventListener("click",function(){if(running&&!paused&&!manualStopAudio)playBgm()})}
+function bind(id,fn){
+var b=$(id);
+if(!b)return;
+function run(e){
+e.preventDefault();
+e.stopPropagation();
+if(id==="startBtn"||id==="retryBtn"){
+manualStopAudio=false;
+running=true;
+paused=false;
+resetBgm();
+rawPlayBgm()
+}
+fn()
+}
+b.onclick=run;
+b.ontouchstart=run
+}
+
+function bootGame(){
+initEls();
+loadData();
+renderCat("");
+updateBoss();
+updateHp();
+renderBook();
+update();
+bind("startBtn",startGame);
+bind("retryBtn",startGame);
+bind("startBookBtn",openBook);
+bind("gameoverBookBtn",openBook);
+bind("closeBookBtn",closeBook);
+bind("catBtn",function(){choose("cat")});
+bind("gatorBtn",function(){choose("gator")});
+document.body.addEventListener("touchstart",function(){if(running&&!paused&&!manualStopAudio)playBgm()},{passive:true});
+document.body.addEventListener("click",function(){if(running&&!paused&&!manualStopAudio)playBgm()})
+}
+
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",bootGame)}else{bootGame()}
 </script>
 </body>
