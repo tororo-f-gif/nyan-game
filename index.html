@@ -1,571 +1,765 @@
-<!DOCTYPE html><html lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>にゃんこ落ち物仕分けDX</title>
+<title>にゃんこVSワニ王CPUバトル完成版軽量</title>
 <style>
-*{box-sizing:border-box;user-select:none;-webkit-user-select:none}
-body{margin:0;background:linear-gradient(#ffe08a,#21142f);font-family:sans-serif;color:white;overflow:hidden}
-#game{width:min(100vw,430px);height:min(100svh,calc(min(100vw,430px)*16/9));aspect-ratio:9/16;margin:0 auto;background:#1b1028;position:relative;overflow:hidden;border-left:3px solid #fff;border-right:3px solid #fff}
-#board{position:absolute;inset:0;background:linear-gradient(90deg,transparent 48.5%,#ffffff55 50%,transparent 51.5%),repeating-linear-gradient(0deg,#ffffff13 0 2px,transparent 2px 30px);overflow:hidden}
-#feverBg{position:absolute;left:-135%;top:132px;width:120%;height:62px;z-index:20;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,#ff4f9370,#ffd84a88,#ffffffaa,#ffd84a88,#ff4f9370,transparent);filter:blur(1px);box-shadow:0 0 14px #ffd84a88,0 0 22px #ff4f9366}
-#feverBg.run{animation:feverSweep .95s ease-out forwards}
-#feverBg:before{content:"FEVER";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:1000;color:#fff;text-shadow:2px 2px #000,0 0 9px #ff4f93;letter-spacing:2px}
-#feverBg:after{content:"";position:absolute;inset:-16px;background:radial-gradient(circle at 10% 40%,#fff 0 1px,transparent 3px),radial-gradient(circle at 22% 66%,#ffd84a 0 2px,transparent 4px),radial-gradient(circle at 42% 35%,#fff 0 2px,transparent 4px),radial-gradient(circle at 62% 62%,#ffb7ff 0 1px,transparent 3px),radial-gradient(circle at 82% 30%,#fff 0 2px,transparent 4px),radial-gradient(circle at 94% 55%,#ffd84a 0 1px,transparent 3px);opacity:.65}
-@keyframes feverSweep{0%{left:-135%;opacity:0}14%{opacity:.9}78%{opacity:.9}100%{left:110%;opacity:0}}
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;background:#2b1b7a;color:#fff;
+  font-family:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Arial Rounded MT Bold","Yu Gothic UI",Meiryo,system-ui,sans-serif;
+  font-weight:900;letter-spacing:0
+}
+body{display:flex;align-items:center;justify-content:center}
+button{font-family:inherit;cursor:pointer}
 
-#skinGetBanner{
-position:absolute;
-left:50%;
-top:20%;
-transform:translateX(-50%);
-z-index:999;
-background:linear-gradient(90deg,#ff0077,#ffcc00,#ffffff,#ffcc00,#ff0077);
-border:4px solid #fff;
-border-radius:22px;
-padding:14px 22px;
-font-size:20px;
-font-weight:1000;
-color:#fff;
-text-shadow:3px 3px #000,0 0 12px #ff4f93;
-box-shadow:0 0 18px #fff,0 0 35px #ffd84a,0 0 55px #ff4f93;
-text-align:center;
-white-space:nowrap;
-pointer-events:none;
+#game{
+  position:relative;width:min(100vw,430px);height:min(100svh,calc(min(100vw,430px)*16/9));
+  aspect-ratio:9/16;overflow:hidden;border-left:3px solid #fff;border-right:3px solid #fff;
+  background:linear-gradient(180deg,#4b1bb8 0%,#2b1b7a 65%,#3b238f 100%)
 }
-#skinGetBanner:before{
-content:"✨✨✨";
-position:absolute;
-left:50%;
-top:-28px;
-transform:translateX(-50%);
-font-size:26px;
-animation:skinSpark .35s infinite alternate;
+#game:before,#game:after{content:none!important;display:none!important}
+
+#top{
+  position:absolute;left:6px;right:6px;top:5px;height:46px;display:grid;
+  grid-template-columns:1fr 1fr .78fr .86fr;gap:4px;z-index:30
 }
-#skinGetBanner:after{
-content:"✨✨✨";
-position:absolute;
-left:50%;
-bottom:-30px;
-transform:translateX(-50%);
-font-size:26px;
-animation:skinSpark .35s infinite alternate-reverse;
+.topBox{
+  border:1.5px solid #00FFFF;border-radius:10px;background:#3b238f;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden
 }
-#skinGetBanner.show{animation:skinGetPop 1.8s ease-out forwards}
-@keyframes skinGetPop{
-0%{opacity:0;transform:translateX(-50%) scale(.35) rotate(-8deg)}
-12%{opacity:1;transform:translateX(-50%) scale(1.25) rotate(5deg)}
-24%{transform:translateX(-50%) scale(.95) rotate(-3deg)}
-38%{transform:translateX(-50%) scale(1.08) rotate(2deg)}
-75%{opacity:1;transform:translateX(-50%) scale(1) rotate(0)}
-100%{opacity:0;transform:translateX(-50%) scale(.85) rotate(0)}
+.label{font-size:8px;font-weight:900;color:#FFFF00;white-space:nowrap}
+.value{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff}
+
+#combo{
+  position:absolute;left:50%;top:56px;width:126px;height:55px;z-index:36;
+  background:#3b238f;border:2px solid #fff;border-radius:16px;
+  text-align:center;padding:3px 6px;transform:translateX(-50%)
 }
-@keyframes skinSpark{
-from{opacity:.55;filter:drop-shadow(0 0 4px #fff)}
-to{opacity:1;filter:drop-shadow(0 0 14px #ffd84a)}
+#combo .a{
+  font-family:"Arial Black","Impact","Yu Gothic UI",sans-serif;
+  font-size:9px;line-height:10px;font-weight:900;color:#00FFFF
+}
+#combo .b{
+  font-family:"Arial Black","Impact","Yu Gothic UI",sans-serif;
+  font-size:31px;font-weight:900;line-height:27px;
+  background:none;color:#FFFF00;-webkit-text-fill-color:#FFFF00
+}
+#combo .c{
+  font-family:"Arial Black","Impact","Yu Gothic UI",sans-serif;
+  font-size:10px;line-height:10px;font-weight:900;
+  background:none;color:#00FFFF;-webkit-text-fill-color:#00FFFF
+}
+#combo.hit{animation:comboHit .14s ease-out}
+@keyframes comboHit{50%{transform:translateX(-50%) scale(1.08)}}
+
+#fever{
+  position:absolute;left:calc(50% + 72px);top:68px;z-index:38;min-width:86px;height:26px;
+  line-height:22px;text-align:center;border:2px solid #fff;border-radius:999px;
+  background:linear-gradient(90deg,#ff0000,#ffa500,#ffff00,#008000,#00ffff,#0000ff,#800080);
+  font-family:"Arial Black","Impact","Yu Gothic UI",sans-serif;
+  font-size:14px;font-weight:900;color:#fff;opacity:0;pointer-events:none;transform:translateX(0) scale(.95)
+}
+#fever.run{opacity:1;animation:feverCross .58s ease-out forwards}
+#fever.on{opacity:1;transform:translateX(0) scale(1)}
+@keyframes feverCross{
+  0%{left:-130px;transform:translateX(0) scale(.9);opacity:0}
+  20%{opacity:1}
+  72%{left:calc(50% + 72px);transform:translateX(0) scale(1.12);opacity:1}
+  100%{left:calc(50% + 72px);transform:translateX(0) scale(1);opacity:1}
 }
 
-#top{position:absolute;left:8px;right:8px;top:6px;height:34px;padding:2px;background:#2a183cee;border:1.5px solid #fff;border-radius:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;text-align:center;z-index:100}
-.box{background:#130b1eee;border:1px solid #fff;border-radius:6px;padding:1px;font-weight:900;font-size:7px;line-height:1}
-.box span{display:block;color:#ffd84a;font-size:12px;text-shadow:1px 1px #000;margin-top:0}
-#timeTop{font-size:11px;white-space:nowrap}
-#comboBox{position:absolute;left:8px;top:46px;z-index:130;min-width:86px;padding:4px 8px;background:linear-gradient(180deg,#111,#000);border-left:4px solid #ff4f93;border-top:1px solid #fff8;border-right:1px solid #fff4;border-bottom:1px solid #000;border-radius:4px 10px 10px 4px;box-shadow:4px 4px 0 #0008,0 0 8px #ff4f9344;color:#fff;line-height:1;text-align:left;pointer-events:none}
-#comboBox b{display:block;font-size:8px;letter-spacing:1px;color:#ff9bd2;text-shadow:1px 1px #000}
-#comboBox span{display:inline-block;font-size:25px;font-weight:1000;color:#ffd84a;text-shadow:2px 2px #000;margin-top:1px}
-#comboBox i{font-style:normal;font-size:10px;font-weight:1000;color:#fff;margin-left:3px;text-shadow:1px 1px #000}
-#comboBox em{font-style:normal;font-size:10px;font-weight:1000;color:#7ff;margin-left:4px;text-shadow:1px 1px #000}
-#comboBox.hit{animation:hitPop .18s ease-out}
-@keyframes hitPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
-#factorySource{position:absolute;top:46px;left:50%;transform:translateX(-50%);z-index:90;width:58px;height:40px;background:linear-gradient(#777,#222);border:2px solid #ddd;border-radius:0 0 14px 14px;box-shadow:0 4px 0 #0008,0 0 10px #fff2}
-#factorySource:before{content:"🐾";position:absolute;left:50%;top:2px;transform:translateX(-50%);font-size:17px;color:#ffd84a}
-#factorySource:after{content:"";position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);width:34px;height:14px;background:#111;border:2px solid #ccc;border-top:0;border-radius:0 0 8px 8px}
-#timer{display:none}
-#msg{position:absolute;right:8px;top:92px;font-size:10px;font-weight:1000;text-shadow:1px 1px #000;z-index:140;pointer-events:none;opacity:0;text-align:right;white-space:nowrap;transition:opacity .18s;background:#000a;border:1px solid #fff;border-radius:999px;padding:3px 9px;max-width:46%;overflow:hidden;text-overflow:ellipsis}
-#catLife{position:absolute;bottom:280px;left:25%;transform:translateX(-50%);font-size:11px;font-weight:900;text-shadow:1px 1px #000;z-index:60;white-space:nowrap;background:#0008;border:1px solid #fff;border-radius:999px;padding:1px 6px}
-#gatorHpText{position:absolute;right:24px;bottom:280px;width:110px;text-align:center;font-size:10px;font-weight:900;text-shadow:1px 1px #000;z-index:60}
-#gatorHpBox{position:absolute;right:24px;bottom:264px;width:110px;height:11px;background:#0009;border:1px solid #fff;border-radius:99px;overflow:hidden;z-index:60}
-#gatorHpBar{height:100%;width:100%;background:linear-gradient(90deg,#2ecc71,#ffd84a,#e74c3c)}
-#cat{position:absolute;bottom:205px;left:25%;transform:translateX(-50%);font-size:40px;z-index:4;filter:drop-shadow(0 5px #0008);width:54px;height:54px;display:flex;align-items:center;justify-content:center}
-#gator{position:absolute;bottom:205px;left:75%;transform:translateX(-50%);font-size:40px;z-index:4;filter:drop-shadow(0 5px #0008)}
-#stageName{position:absolute;left:54%;right:10px;bottom:178px;height:22px;line-height:19px;background:#000c;border:1.5px solid #fff;border-radius:999px;text-align:center;font-size:9px;font-weight:900;z-index:70;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.zone{position:absolute;bottom:136px;width:50%;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;text-shadow:1px 1px #000;border-top:1px solid #fff;z-index:50}
-#catZone{left:0;background:#ff4f93}
-#gatorZone{right:0;background:#ff9800}
-#controls{position:absolute;left:12px;right:12px;bottom:82px;height:48px;display:grid;grid-template-columns:1fr 1fr;gap:10px;z-index:80}
-button{border:0;border-radius:14px;font-size:19px;font-weight:1000;color:white;text-shadow:2px 2px #000;box-shadow:0 4px #0008;touch-action:manipulation}
-button:active{transform:translateY(2px);box-shadow:0 2px #0008}
-#catBtn{background:#ff4f93}
-#gatorBtn{background:#ff9800}
-#guide{position:absolute;bottom:32px;left:8px;right:8px;z-index:92;background:#0009;border:1px solid #fff;border-radius:8px;padding:3px 5px;font-size:9px;font-weight:900;text-align:center;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chain{position:absolute;bottom:58px;width:50%;height:16px;font-size:10px;font-weight:900;text-align:center;z-index:55;text-shadow:1px 1px #000;overflow:hidden;white-space:nowrap;pointer-events:none}
-.catChain{left:0}.gatorChain{right:0}
-#player{position:absolute;width:58px;height:58px;border-radius:16px;background:#fff8;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 6px 0 #0008;z-index:6;transition:left .1s,top .1s,opacity .08s,transform .1s}
-.faceBadge{position:absolute;right:-4px;top:-6px;font-size:16px;background:#0009;border:1.5px solid #fff;border-radius:50%;width:23px;height:23px;display:flex;align-items:center;justify-content:center}
-.alien{position:absolute;z-index:11;filter:drop-shadow(0 5px #0008);pointer-events:none;will-change:left,top}
-.overlay{position:absolute;inset:0;background:#000c;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;pointer-events:auto}
-.panel{background:#21142f;border:3px solid #fff;border-radius:22px;padding:14px;max-width:350px;width:100%;max-height:92svh;overflow:auto;pointer-events:auto}
-.panel h1{margin:0 0 8px;color:#ffd84a;text-shadow:2px 2px #000;font-size:26px}
-.panel p{font-weight:800;line-height:1.35;font-size:12px}
-.startBtn,.subBtn{width:100%;height:48px;background:#ff4f93;margin-top:8px;font-size:18px;pointer-events:auto}
-.subBtn{background:#2ecc71}
+#battle{
+  position:absolute;left:6px;right:6px;top:128px;bottom:124px;z-index:20;
+  display:grid;grid-template-columns:1fr 106px 1fr;gap:5px;min-height:0
+}
+.side{min-width:0;min-height:0;display:grid;grid-template-rows:58px 22px 42px 1fr;gap:4px}
+.characterBox{position:relative;border-radius:16px;background:#ffffff14;overflow:hidden;border:1px solid #ffffff18}
+.platform{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);width:82px;height:18px;border-radius:50%}
+#catSide .platform{background:#00FFFF}
+#gatorSide .platform{background:#FF0000}
+.char{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);font-size:38px}
+#gator{font-size:41px}
+.char.hit{animation:charHit .14s ease-out}
+.char.jump{animation:charJump .14s ease-out}
+.char.damaged{animation:damageShake .22s ease-out}
+@keyframes charHit{50%{transform:translateX(-50%) scale(1.14)}}
+@keyframes charJump{50%{transform:translateX(-50%) translateY(-7px) scale(1.08)}}
+@keyframes damageShake{
+  0%{transform:translateX(-50%) scale(1)}
+  18%{transform:translateX(calc(-50% - 7px)) scale(1.08)}
+  36%{transform:translateX(calc(-50% + 7px)) scale(1.06)}
+  54%{transform:translateX(calc(-50% - 5px)) scale(1.04)}
+  72%{transform:translateX(calc(-50% + 4px)) scale(1.02)}
+  100%{transform:translateX(-50%) scale(1)}
+}
+#gator.bossShake{animation:bossShake .42s ease-out}
+@keyframes bossShake{
+  0%{transform:translateX(-50%) scale(1)}
+  15%{transform:translateX(calc(-50% - 7px)) scale(1.08)}
+  30%{transform:translateX(calc(-50% + 7px)) scale(1.08)}
+  45%{transform:translateX(calc(-50% - 5px)) scale(1.04)}
+  60%{transform:translateX(calc(-50% + 5px)) scale(1.04)}
+  80%{transform:translateX(calc(-50% - 2px)) scale(1.02)}
+  100%{transform:translateX(-50%) scale(1)}
+}
+#gator.boomed{animation:gatorBoom 1.25s ease-out forwards}
+@keyframes gatorBoom{
+  0%{opacity:1;transform:translateX(-50%) scale(1)}
+  18%{opacity:1;transform:translateX(-50%) scale(1.18) rotate(-6deg)}
+  36%{opacity:.9;transform:translateX(-50%) scale(.92) rotate(7deg)}
+  58%{opacity:.55;transform:translateX(-50%) scale(1.28) rotate(-10deg)}
+  100%{opacity:0;transform:translateX(-50%) scale(.3) rotate(18deg)}
+}
+.name{
+  height:22px;line-height:19px;border-radius:999px;font-size:11px;font-weight:900;
+  text-align:center;border:2px solid #fff8;white-space:nowrap;overflow:hidden
+}
+#catName{background:#0000FF}
+#gatorName{background:#FF0000}
+.hpBox{
+  background:#3b238f;border:1.5px solid #00FFFF;border-radius:9px;padding:3px 5px;
+  overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:2px
+}
+.hpTitle{font-size:8px;font-weight:900;color:#00FFFF}
+.barOuter{height:16px;background:#3b238f;border:1.5px solid #fff;border-radius:999px;overflow:hidden;position:relative}
+.bar{height:100%;width:100%;border-radius:999px}
+#catHp{background:#00FFFF}
+#gatorHp{background:#FF0000}
+.hpText{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff}
+
+.boxWrap{
+  min-height:0;background:#3b238f;border:2px solid #00FFFF;border-radius:16px;padding:6px;
+  display:grid;grid-template-rows:18px 1fr;gap:6px
+}
+.boxHead{font-size:14px;font-weight:900;color:#fff}
+.grid{min-height:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:5px}
+.cell{
+  display:flex;align-items:center;justify-content:center;background:#ffffff10;border:1px solid #ffffff22;
+  border-radius:13px;font-size:23px;overflow:hidden
+}
+.cell.empty{opacity:.25}
+.cell.lv2{border:2px solid #fff;background:#00FFFF}
+.cell.lv3{border:2px solid #fff;background:#FFFF00}
+
+#center{position:relative;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-self:start;height:255px;min-height:255px;max-height:255px}
+.lane{position:relative;border:2px solid #fff8;border-radius:22px;overflow:hidden;height:255px}
+.lane:before{content:"🐾";position:absolute;left:50%;top:4px;transform:translateX(-50%);width:27px;height:19px;line-height:17px;text-align:center;border-radius:0 0 12px 12px;background:#3b238f;border:1px solid #eee;font-size:12px;z-index:3}
+.lane:after{content:none;display:none}
+#catLane{background:#0000FF66}
+#cpuLane{background:#FF000066}
+#cpuLane.cpuActive{filter:brightness(1.15)}
+.laneLabel{position:absolute;left:4px;right:4px;bottom:6px;min-height:29px;line-height:13px;border-radius:999px;text-align:center;font-size:10px;font-weight:900;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff}
+.fall{position:absolute;left:50%;top:0;transform:translate3d(-50%,26px,0);z-index:8;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:12px;background:#ffffffd9;border:2px solid #fff}
+#vs{position:absolute;left:50%;top:258px;transform:translateX(-50%);z-index:18;font-size:24px;font-weight:900;color:#FFFF00;pointer-events:none}
+
+#ultPanel{position:absolute;left:6px;right:6px;bottom:78px;height:34px;z-index:72;display:grid;grid-template-columns:1fr 72px;gap:6px}
+#ultMeter{background:#3b238f;border:1.5px solid #00FFFF;border-radius:12px;padding:4px 6px}
+#ultTitle{font-size:8px;line-height:8px;font-weight:900;color:#00FFFF}
+#ultOuter{height:14px;border:1px solid #fff;border-radius:999px;background:#3b238f;overflow:hidden;margin-top:3px}
+#ultFill{height:100%;width:0%;background:#00FFFF}
+#ultBtn{height:34px;border:2px solid #fff;border-radius:12px;background:#0000FF;color:#fff;font-size:13px;font-weight:900;opacity:.62}
+#ultBtn.ready{opacity:1;background:#FF0000;color:#FFFF00}
+
+#bottom{position:absolute;left:6px;right:6px;bottom:6px;height:68px;z-index:70;display:grid;grid-template-rows:20px 44px;gap:4px}
+#battleLog{background:#3b238f;border:1.5px solid #00FFFF;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 8px;color:#fff}
+#buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.btn{border:0;border-radius:13px;font-size:14px;font-weight:900;color:#fff;touch-action:manipulation}
+.btn small{display:block;font-size:7px;font-weight:900;margin-top:2px}
+#leftBtn{background:#0000FF;border:2px solid #00FFFF}
+#rightBtn{background:#FF0000;border:2px solid #fff}
+
+.flyFx{position:absolute;z-index:200;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:31px;border-radius:14px;background:#ffffffd8;border:2px solid #fff;pointer-events:none}
+.cpuAtkFx{width:48px;height:48px;font-size:35px;border:3px solid #FF0000;background:#FFFF00}
+.floatText{position:absolute;z-index:205;display:none;pointer-events:none;font-size:18px;font-weight:900;white-space:nowrap;transform:translate(-50%,-50%)}
+.floatText.show{display:block}
+#mergeText{color:#FFFFFF;background:#0000FF;border:2px solid #fff;border-radius:999px;padding:5px 10px}
+#hitText{display:none!important}
+
+.effectBurst{
+  position:absolute;z-index:240;display:none;pointer-events:none;
+  width:118px;height:48px;padding:5px 8px;
+  align-items:center;justify-content:center;flex-direction:column;
+  transform:translate(-50%,-50%) scale(1);
+  border-radius:14px;border:2px solid #fff;overflow:hidden
+}
+.effectBurst:before,.effectBurst:after{content:none;display:none}
+.effectBurst.show{display:flex;animation:effectFlatPop .42s ease-out forwards}
+@keyframes effectFlatPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.92)}
+  16%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  78%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-58%) scale(.98)}
+}
+.effectBurst.damage{background:#FF0000}
+.effectBurst.heal{background:#00FFFF}
+.effectBurstLabel{
+  position:relative;z-index:1;width:100%;margin:0;padding:0;text-align:center;
+  font-size:15px;line-height:17px;font-weight:900;color:#FFFF00;letter-spacing:0;white-space:nowrap
+}
+.effectBurstValue{
+  position:relative;z-index:1;width:100%;margin:0;padding:0;text-align:center;
+  font-size:24px;line-height:25px;font-weight:900;color:#FFFFFF;letter-spacing:0;white-space:nowrap
+}
+.effectBurst.heal .effectBurstLabel,.effectBurst.heal .effectBurstValue{color:#0000FF}
+.effectBurst.damage .effectBurstLabel{color:#FFFF00}
+.effectBurst.damage .effectBurstValue{color:#FFFFFF}
+
+#boom{
+  position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) scale(.4);z-index:225;
+  display:none;width:190px;height:190px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff 0 7%,#ffff00 8% 18%,#ffa500 19% 34%,#ff0000 35% 50%,transparent 51%)
+}
+#boom.show{display:block;animation:boomPop 1.25s ease-out forwards}
+@keyframes boomPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(0deg)}
+  15%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(8deg)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.28) rotate(-6deg)}
+  65%{opacity:.8;transform:translate(-50%,-50%) scale(1.55) rotate(8deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.9) rotate(18deg)}
+}
+#koText{position:absolute;left:50%;top:34%;transform:translateX(-50%);z-index:230;display:none;font-size:28px;line-height:32px;font-weight:900;color:#FFFF00;pointer-events:none;white-space:nowrap}
+#koText.show{display:block;animation:koHold 1.3s ease-out forwards}
+@keyframes koHold{0%{opacity:0;transform:translateX(-50%) scale(.7)}18%{opacity:1;transform:translateX(-50%) scale(1.1)}65%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(.95)}}
+
+#toast,#danger{position:absolute;left:50%;transform:translateX(-50%);z-index:220;max-width:88%;padding:6px 12px;border-radius:999px;background:#3b238f;border:2px solid #fff;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;pointer-events:none;color:#fff}
+#toast{top:430px}
+#danger{top:454px;border-color:#FF0000;color:#FFFF00}
+#toast.show,#danger.show{opacity:1}
+#countdown{position:absolute;inset:0;z-index:900;display:none;align-items:center;justify-content:center;font-size:76px;font-weight:900;color:#FFFF00;pointer-events:none}
+#countdown.show{display:flex}
+
+.overlay{position:absolute;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:18px;background:#3b238f}
 .hidden{display:none!important}
-.oldMan{font-size:54px;display:block;margin-bottom:4px}
-.brainAge{font-size:30px;color:#ffd84a;text-shadow:2px 2px #000;font-weight:1000}
-#bookList{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-bottom:30px}
-.card{background:#130b1e;border:2px solid #fff;border-radius:14px;padding:10px 6px;font-weight:900;cursor:pointer}
-.card .emoji{font-size:34px;display:block}
-.locked{opacity:.35;filter:grayscale(1);cursor:default}
-.selectedSkin{border-color:#ffd84a;background:#3a2750;box-shadow:0 0 0 3px #ffd84a55}
-.skinNote{font-size:10px;color:#ffd84a;margin-top:4px}
+.panel{width:100%;max-width:350px;max-height:92svh;overflow:auto;background:#4b1bb8;border:3px solid #fff;border-radius:22px;padding:14px 12px;text-align:center}
+.panel h1{margin:0 0 10px;font-size:25px;font-weight:900;line-height:1.12;color:#FFFF00}
+.panel p{font-size:12px;line-height:1.45;font-weight:900}
+.panel button{width:100%;height:45px;margin-top:10px;border:0;border-radius:15px;background:#0000FF;color:#fff;font-size:17px;font-weight:900}
+.credit{margin:4px 0 10px;padding:6px 8px;border:1px solid #ffffff55;border-radius:999px;background:#3b238f;font-size:11px;font-weight:900;color:#00FFFF}
+.gameDesc{margin:10px 0 12px;padding:10px;border:2px solid #00FFFF;border-radius:14px;background:#3b238f;text-align:left}
+.descTitle{font-size:13px;font-weight:900;color:#FFFF00;margin-bottom:6px;text-align:center}
+.gameDesc p{margin:5px 0;font-size:12px;line-height:1.45;font-weight:900}
+#catSelectList{display:grid;gap:8px;margin-top:10px}
+.catCard{display:grid;grid-template-columns:46px 1fr;gap:8px;align-items:center;padding:8px;border:2px solid #ffffff66;border-radius:14px;background:#3b238f;text-align:left}
+.catCard.selected{border-color:#FFFF00}
+.catIcon{font-size:34px;text-align:center}
+.catInfo b{display:block;color:#FFFF00;font-size:13px}
+.catInfo span{display:block;font-size:10px;line-height:1.35;margin-top:2px}
+.catStats{margin-top:4px;font-size:9px;color:#00FFFF}
+.resultBig{font-size:24px;font-weight:900;color:#FFFF00;margin:6px 0}
+.resultList{font-size:12px;line-height:1.45;text-align:left;background:#3b238f;border:1px solid #fff6;border-radius:12px;padding:8px;margin:8px 0}
+#brainOld{font-size:58px;line-height:1;margin:4px 0 2px}
+#brainComment{margin:6px 0;font-size:12px;line-height:1.45;font-weight:900;color:#fff}
+#brainAge{margin:4px 0 8px;font-size:34px;font-weight:900;color:#FFFF00}
+
+@media(max-height:700px){
+  #battle{top:122px;bottom:120px;grid-template-columns:1fr 104px 1fr}
+  .side{grid-template-rows:54px 20px 38px 1fr}
+  .char{font-size:34px}
+  #gator{font-size:37px}
+  .cell{font-size:19px}
+  #center{height:226px;min-height:226px;max-height:226px}
+  .lane{height:226px}
+  #vs{top:229px}
+  #toast{top:405px}
+  #danger{top:429px}
+  .effectBurst{width:112px;height:46px}
+  .effectBurstLabel{font-size:14px}
+  .effectBurstValue{font-size:23px;line-height:24px}
+}
 </style>
 </head>
 <body>
-<audio id="bgm" src="bgm.mp3" loop preload="auto" playsinline></audio>
+<audio id="bgmAudio" src="./bgm.mp3" loop preload="auto" playsinline></audio>
 
 <div id="game">
-<div id="feverBg"></div>
-<div id="skinGetBanner" class="hidden"></div>
-<div id="top">
-<div class="box">スコア<span id="score">0</span></div>
-<div class="box">ワニ<span id="stageNum">1</span></div>
-<div class="box">時間<span id="timeTop">0.00</span></div>
-</div>
-<div id="comboBox"><b>HIT COMBO</b><span>0</span><i>HIT</i><em>x1.0</em></div>
-<div id="factorySource"></div>
-<div id="timer">待機中</div>
-<div id="board">
-<div id="catLife">❤️❤️❤️❤️❤️</div>
-<div id="cat">😺</div>
-<div id="gator">🐊</div>
-<div id="gatorHpText">HP</div>
-<div id="gatorHpBox"><div id="gatorHpBar"></div></div>
-<div id="stageName">第1ワニ：ちびワニ</div>
-<div id="player">🐟</div>
-<div id="catChain" class="chain catChain"></div>
-<div id="gatorChain" class="chain gatorChain"></div>
-<div id="catZone" class="zone">🐱</div>
-<div id="gatorZone" class="zone">🐊</div>
-</div>
-<div id="msg"></div>
-<div id="controls">
-<button id="catBtn" type="button">左</button>
-<button id="gatorBtn" type="button">右</button>
-</div>
-<div id="guide">🐟🧶🥫🎁❤️は左　💣🪨は右のワニへ</div>
+  <div id="hitText" class="floatText"></div>
+  <div id="mergeText" class="floatText"></div>
 
-<div id="startScreen" class="overlay">
-<div class="panel">
-<h1>にゃんこ<br>落ち物仕分けDX</h1>
-<p>上の配送口から流れてくる落ち物を仕分けよう。</p>
-<p>魚・毛糸・猫缶・プレゼント・回復は左。<br>爆弾・石は右のワニへ。</p>
-<p>集めた猫スキンは猫図鑑から変更できます。</p>
-<button id="startBtn" class="startBtn" type="button">スタート</button>
-<button id="startBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-</div>
-</div>
+  <div id="catEffect" class="effectBurst">
+    <div class="effectBurstLabel">回復！</div>
+    <div class="effectBurstValue">+999</div>
+  </div>
+  <div id="gatorEffect" class="effectBurst">
+    <div class="effectBurstLabel">ダメージ！</div>
+    <div class="effectBurstValue">-999</div>
+  </div>
 
-<div id="gameoverScreen" class="overlay hidden">
-<div class="panel">
-<span class="oldMan">⚡👴🏿⚡</span>
-<h1>脳年齢診断</h1>
-<p>変なオッサン「あなたの脳年齢は……」</p>
-<div id="brainAge" class="brainAge">--歳</div>
-<p id="finalScore">スコア：0</p>
-<button id="retryBtn" class="startBtn" type="button">もう一回</button>
-<button id="gameoverBookBtn" class="subBtn" type="button">猫図鑑を見る</button>
-</div>
-</div>
+  <div id="boom"></div>
+  <div id="koText">ワニ撃破!!</div>
+  <div id="toast"></div>
+  <div id="danger"></div>
+  <div id="countdown">3</div>
 
-<div id="bookScreen" class="overlay hidden">
-<div class="panel">
-<button id="closeBookBtn" class="subBtn" type="button">ゲームに戻る</button>
-<h1>猫カード図鑑</h1>
-<p id="bookCount">0 / 7</p>
-<div id="bookList"></div>
-</div>
-</div>
+  <div id="top">
+    <div class="topBox"><div class="label">猫缶で最大HP</div><div class="value">🥫 <span id="can">0</span>/3</div></div>
+    <div class="topBox"><div class="label">スコア</div><div class="value" id="score">0</div></div>
+    <div class="topBox"><div class="label">STAGE</div><div class="value" id="stage">1</div></div>
+    <div class="topBox"><div class="label">時間</div><div class="value" id="time">0.00</div></div>
+  </div>
+
+  <div id="combo"><div class="a">RUSH COMBO</div><div class="b" id="comboNum">0</div><div class="c">HITS!!</div></div>
+  <div id="fever">FEVER</div>
+
+  <div id="battle">
+    <section id="catSide" class="side">
+      <div class="characterBox"><div class="platform"></div><div id="cat" class="char">🥷</div></div>
+      <div id="catName" class="name">🐾 忍者猫</div>
+      <div class="hpBox"><div class="hpTitle">猫のHP</div><div class="barOuter"><div id="catHp" class="bar"></div><div id="catHpText" class="hpText"></div></div></div>
+      <div class="boxWrap"><div class="boxHead">猫BOX</div><div id="catGrid" class="grid"></div></div>
+    </section>
+
+    <div id="center">
+      <div id="catLane" class="lane"><div id="catItem" class="fall">🐟</div><div class="laneLabel"><span>操作</span><span>レーン</span></div></div>
+      <div id="cpuLane" class="lane"><div id="cpuItem" class="fall">💣</div><div class="laneLabel"><span>ワニ</span><span>CPU</span></div></div>
+      <div id="vs">VS</div>
+    </div>
+
+    <section id="gatorSide" class="side">
+      <div class="characterBox"><div class="platform"></div><div id="gator" class="char">🐊</div></div>
+      <div id="gatorName" class="name">🐊 ちびワニ CPU</div>
+      <div class="hpBox"><div class="hpTitle">ワニのHP</div><div class="barOuter"><div id="gatorHp" class="bar"></div><div id="gatorHpText" class="hpText"></div></div></div>
+      <div class="boxWrap"><div class="boxHead">ワニBOX</div><div id="gatorGrid" class="grid"></div></div>
+    </section>
+  </div>
+
+  <div id="ultPanel"><div id="ultMeter"><div id="ultTitle">猫奥義</div><div id="ultOuter"><div id="ultFill"></div></div></div><button id="ultBtn">奥義</button></div>
+
+  <div id="bottom">
+    <div id="battleLog">ログ：左レーンのアイテムを送る</div>
+    <div id="buttons"><button id="leftBtn" class="btn">←左（猫へ）<small>回復系は猫へ</small></button><button id="rightBtn" class="btn">右（ワニへ）→<small>攻撃系はワニへ</small></button></div>
+  </div>
+
+  <div id="startScreen" class="overlay">
+    <div class="panel">
+      <h1>にゃんこVS<br>ワニ王CPUバトル</h1>
+      <div class="credit">開発者：神宮寺匁トロロ<br>X：@Tororo_JINGUJI</div>
+      <div class="gameDesc">
+        <div class="descTitle">ゲーム説明</div>
+        <p>落ちてくるアイテムを、猫側かワニ側に仕分ける対戦ゲームです。</p>
+        <p>魚・猫缶・ハートなどの回復系は猫へ送ると回復します。</p>
+        <p>爆弾・岩などの攻撃系はワニへ送るとダメージを与えます。</p>
+        <p>同じアイテムがBOXで重なると、絵文字が進化して追加効果が発生します。</p>
+        <p>ステージ1〜4は基本アイテムのみ。ステージ5以降から寿司・ドクロ・UFOなどが追加されます。</p>
+        <p>ステージ10以降は奇跡の星・火炎・雷、ステージ16以降は宝石・隕石・ロケットが追加されます。</p>
+        <p>仕分けを間違えると猫にダメージ。ステージ21のワニ王撃破を目指します。</p>
+      </div>
+      <button id="startBtn">スタート</button>
+    </div>
+  </div>
+
+  <div id="charSelectScreen" class="overlay hidden">
+    <div class="panel">
+      <h1>キャラクター選択</h1>
+      <p>使う猫を選んでください。</p>
+      <p id="bgmStatus" style="font-size:11px;color:#00FFFF;margin:4px 0 6px;">BGM準備中</p>
+      <button id="bgmBtn" style="height:34px;font-size:13px;margin-top:4px;background:#FF0000;color:#FFFF00;">BGM再生</button>
+      <div id="catSelectList"></div>
+      <button id="charDecideBtn">この猫で開始</button>
+    </div>
+  </div>
+
+  <div id="gameOverScreen" class="overlay hidden">
+    <div class="panel">
+      <h1 id="resultTitle">ゲーム終了</h1>
+      <div id="brainOld">⚡👴🏿⚡</div>
+      <p id="brainComment">変な博士「あなたの脳内年齢は……」</p>
+      <div id="brainAge">--歳</div>
+      <div id="resultText" class="resultBig">スコア0</div>
+      <div id="resultDetail" class="resultList"></div>
+      <button id="retryBtn">もう一回</button>
+    </div>
+  </div>
 </div>
 
 <script>
-var score=0,stage=1,lives=5,food=0,needFood=3,startClock=0,combo=0,maxCombo=0,fever=false,feverEnd=0,coin=0,running=false,paused=false,judging=false,current=null,x=0,y=0,v=.95,loopId=null,chains={cat:[],gator:[]},itemBag=[],aliens=[],nextAlienAt=0,chaosVX=0,chaosTick=0,giftAllowed=false,giftDropped=false,gatorHp=90,gatorMaxHp=90;
-var feverFxTimer=null,bgmStarted=false,manualStopAudio=false,bgmKickTimer=null;
-var selectedCatName=localStorage.getItem("nyankoSelectedCat")||"ノーマル猫",collection={};
-var catCards=[{emoji:"😺",name:"ノーマル猫"},{emoji:"😸",name:"ごきげん猫"},{emoji:"😼",name:"ボス猫"},{emoji:"🥷",name:"忍者猫"},{emoji:"🚀",name:"宇宙猫"},{emoji:"🦁",name:"ライオン猫"},{emoji:"👑",name:"王様猫"}];
-var bosses=[["🐊","第1ワニ：ちびワニ",90,.95],["🐊","第2ワニ：ふつうワニ",130,1.1],["🐊","第3ワニ：かたいワニ",180,1.25],["🐊","第4ワニ：怒りワニ",240,1.42],["🐊","第5ワニ：鉄ワニ",320,1.6],["🦎","第6ワニ：変異ワニ",430,1.82],["🐲","第7ワニ：竜ワニ",560,2.05],["🐉","第8ワニ：火炎ワニ",720,2.3],["🦖","第9ワニ：恐竜ワニ",920,2.58],["🦕","第10ワニ：古代ワニ",1180,2.88],["👹","第11ワニ：鬼ワニ",1500,3.2],["👺","第12ワニ：天狗ワニ",1900,3.55],["💀","第13ワニ：骨ワニ",2400,3.92],["☠️","第14ワニ：呪いワニ",3050,4.32],["👾","第15ワニ：宇宙ワニ",3900,4.75],["🛸","第16ワニ：UFOワニ",5000,5.2],["🔥","第17ワニ：炎神ワニ",6500,5.7],["⚡","第18ワニ：雷神ワニ",8500,6.25],["🌋","第19ワニ：火山ワニ",11200,6.85],["🌌","第20ワニ：銀河ワニ",15000,7.5],["👑","第21ワニ：猫神を喰う神",22000,8.2]];
-var items=[{e:"🐟",a:"cat",p:10},{e:"🧶",a:"cat",p:15},{e:"🥫",a:"cat",p:8,food:true},{e:"🎁",a:"cat",p:50,gift:true},{e:"❤️",a:"cat",p:5,heal:true},{e:"💣",a:"gator",p:12,damage:24},{e:"🪨",a:"gator",p:10,damage:18}];
-var mergeMap={"🐟":"🐠","🐠":"🐡","🐡":"CLEAR","🧶":"🧸","🧸":"🎀","🎀":"CLEAR","🥫":"🍖","🍖":"🍗","🍗":"CLEAR","🎁":"💎","💎":"🏆","🏆":"CLEAR","❤️":"💖","💖":"💝","💝":"CLEAR","💣":"🧨","🧨":"🔥","🔥":"CLEAR","🪨":"🪙","🪙":"💰","💰":"CLEAR"};
-var el={};
+const $=id=>document.getElementById(id);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const fmt=n=>Math.max(0,Math.floor(n)).toLocaleString("ja-JP");
+let FX_COUNT=0;
 
-function $(id){return document.getElementById(id)}
+let bgmStarted=false;
+const soundCache={};
+let audioCtx=null;
 
-function initEls(){
-["score","stageNum","timeTop","catLife","comboBox","feverBg","stageName","timer","board","cat","gator","gatorHpText","gatorHpBar","player","catChain","gatorChain","msg","catBtn","gatorBtn","startScreen","gameoverScreen","bookScreen","startBtn","startBookBtn","retryBtn","gameoverBookBtn","closeBookBtn","brainAge","finalScore","bookCount","bookList"].forEach(function(id){el[id]=$(id)})
+function bgmEl(){return $("bgmAudio")}
+function setBgmStatus(t){const e=$("bgmStatus");if(e)e.textContent=t}
+
+function initAudio(){
+  try{
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    }
+    if(audioCtx.state==="suspended"){
+      audioCtx.resume();
+    }
+  }catch(e){}
 }
 
-function rawPlayBgm(){
-var bgm=$("bgm");
-if(!bgm)return;
-bgm.volume=.45;
-bgm.muted=false;
-bgm.playsInline=true;
-var p=bgm.play();
-if(p&&p.then){p.then(function(){bgmStarted=true}).catch(function(){})}
+function preloadSounds(){
+  ["start","select","tap","heal","damage","miss","merge","fever","ult","ko"].forEach(name=>{
+    try{
+      const a=new Audio("./"+name+".mp3");
+      a.preload="auto";
+      soundCache[name]=a;
+      a.load();
+    }catch(e){}
+  });
 }
 
 function playBgm(){
-if(!running||paused||manualStopAudio)return;
-rawPlayBgm()
-}
+  try{
+    const a=bgmEl();
+    if(!a){setBgmStatus("BGMタグが見つかりません");return}
+    a.volume=0.35;
+    a.loop=true;
+    a.muted=false;
 
-function kickBgm(){
-clearTimeout(bgmKickTimer);
-rawPlayBgm();
-bgmKickTimer=setTimeout(function(){if(running&&!paused&&!manualStopAudio)rawPlayBgm()},120)
+    const p=a.play();
+    if(p&&p.then){
+      p.then(()=>{
+        bgmStarted=true;
+        setBgmStatus("BGM再生中");
+      }).catch(()=>{
+        bgmStarted=false;
+        setBgmStatus("BGMが止まっています。BGM再生ボタンを押してください");
+      });
+    }else{
+      bgmStarted=true;
+      setBgmStatus("BGM再生中");
+    }
+  }catch(e){
+    bgmStarted=false;
+    setBgmStatus("BGM再生エラー");
+  }
 }
 
 function stopBgm(){
-var bgm=$("bgm");
-if(!bgm)return;
-bgm.pause();
-bgmStarted=false;
+  try{
+    const a=bgmEl();
+    if(a){
+      a.pause();
+      a.currentTime=0;
+    }
+    bgmStarted=false;
+    setBgmStatus("BGM停止中");
+  }catch(e){}
 }
 
-function resetBgm(){
-var bgm=$("bgm");
-if(!bgm)return;
-bgm.pause();
-try{bgm.currentTime=0}catch(e){}
-bgmStarted=false;
+function synthSfx(name){
+  try{
+    initAudio();
+    if(!audioCtx)return;
+
+    const t=audioCtx.currentTime;
+    const master=audioCtx.createGain();
+    master.connect(audioCtx.destination);
+
+    function tone(freq,time,dur,type,vol){
+      const o=audioCtx.createOscillator();
+      const g=audioCtx.createGain();
+      o.type=type||"triangle";
+      o.frequency.setValueAtTime(freq,t+time);
+      g.gain.setValueAtTime(0,t+time);
+      g.gain.linearRampToValueAtTime(vol,t+time+.01);
+      g.gain.exponentialRampToValueAtTime(.0001,t+time+dur);
+      o.connect(g);
+      g.connect(master);
+      o.start(t+time);
+      o.stop(t+time+dur+.02);
+    }
+
+    master.gain.setValueAtTime(.55,t);
+
+    if(name==="start"){tone(392,0,.08,"triangle",.09);tone(523,.07,.09,"triangle",.08);tone(784,.15,.16,"triangle",.07);return}
+    if(name==="select"){tone(660,0,.045,"triangle",.06);tone(880,.045,.06,"triangle",.05);return}
+    if(name==="tap"){tone(740,0,.035,"square",.035);return}
+    if(name==="heal"){tone(523,0,.07,"sine",.055);tone(659,.055,.08,"sine",.05);tone(880,.12,.11,"sine",.045);return}
+    if(name==="damage"){tone(180,0,.08,"sawtooth",.055);tone(95,.055,.13,"triangle",.055);return}
+    if(name==="miss"){tone(220,0,.07,"triangle",.06);tone(160,.06,.08,"triangle",.055);tone(92,.13,.13,"triangle",.05);return}
+    if(name==="merge"){tone(620,0,.055,"square",.05);tone(930,.055,.075,"triangle",.05);tone(1240,.12,.10,"sine",.045);return}
+    if(name==="fever"){tone(523,0,.06,"square",.045);tone(659,.055,.06,"square",.045);tone(784,.11,.06,"square",.045);tone(1046,.17,.18,"triangle",.055);return}
+    if(name==="ult"){tone(196,0,.10,"sawtooth",.055);tone(392,.08,.10,"sawtooth",.055);tone(784,.16,.16,"square",.055);tone(1175,.29,.18,"triangle",.05);return}
+    if(name==="ko"){tone(130,0,.10,"sawtooth",.07);tone(260,.09,.12,"sawtooth",.065);tone(520,.19,.18,"triangle",.06);tone(1040,.34,.22,"sine",.05);return}
+
+    tone(600,0,.06,"triangle",.04);
+  }catch(e){}
 }
 
-document.addEventListener("visibilitychange",function(){
-if(document.hidden){stopBgm()}else{if(running&&!paused&&!manualStopAudio)playBgm()}
+function sfx(name){
+  try{
+    let base=soundCache[name];
+
+    if(!base){
+      base=new Audio("./"+name+".mp3");
+      base.preload="auto";
+      soundCache[name]=base;
+    }
+
+    const a=base.cloneNode(true);
+    a.volume=0.55;
+    a.currentTime=0;
+
+    const p=a.play();
+    if(p&&p.catch)p.catch(()=>synthSfx(name));
+  }catch(e){
+    synthSfx(name);
+  }
+}
+
+const bosses=[
+  ["🐊","ちびワニ",8200],["🐊","ふつうワニ",10800],["🟢","毒ワニ",13600],
+  ["🐊","大ワニ",16800],["🦎","変異ワニ",20400],["🐲","竜ワニ",24600],
+  ["🔥","火炎ワニ",29400],["⚡","雷ワニ",34800],["🌊","海王ワニ",40800],
+  ["🪨","岩石ワニ",47400],["👹","鬼ワニ",54600],["👺","天狗ワニ",62400],
+  ["💀","骨ワニ",70800],["☠️","呪いワニ",79800],["👾","宇宙ワニ",89200],
+  ["🛸","UFOワニ",99000],["🌋","火山ワニ",109000],["🌌","銀河ワニ",118000],
+  ["🦖","恐竜ワニ",127000],["🐉","神龍ワニ",137000],["👑","ワニ王最終形態",150000]
+].map(v=>({e:v[0],n:v[1],hp:v[2]}));
+
+const catTypes=[
+  {id:"ninja",e:"🥷",n:"忍者猫",hp:23500,atk:1.00,def:1.00,heal:1.00,d:"標準型。速度・攻撃・回復のバランスが良い。"},
+  {id:"power",e:"😾",n:"火力猫",hp:21500,atk:1.18,def:.96,heal:.92,d:"攻撃特化。ワニを削りやすいが少し打たれ弱い。"},
+  {id:"tank",e:"😼",n:"タンク猫",hp:28500,atk:.88,def:.78,heal:1.02,d:"耐久型。ミスに強いが火力は低め。"},
+  {id:"heal",e:"😸",n:"回復猫",hp:22500,atk:.94,def:.96,heal:1.25,d:"回復型。ハートや魚の回復量が高い。"}
+];
+let selectedCatId="ninja";
+function cat(){return catTypes.find(v=>v.id===selectedCatId)||catTypes[0]}
+
+const items=[
+  {e:"🐟",n:"魚",kind:"cat",score:120,heal:300},{e:"🧶",n:"毛糸",kind:"cat",score:160,heal:170},{e:"🥫",n:"猫缶",kind:"cat",score:180,heal:230,can:1},{e:"❤️",n:"ハート",kind:"cat",score:100,heal:900},
+  {e:"🍣",n:"寿司",kind:"cat",score:240,heal:520},{e:"🌟",n:"奇跡の星",kind:"cat",score:800,heal:1500},{e:"💎",n:"宝石",kind:"cat",score:520,heal:1000},
+  {e:"💣",n:"爆弾",kind:"atk",score:220,damage:820},{e:"🪨",n:"岩",kind:"atk",score:200,damage:720},{e:"👾",n:"ドクロ",kind:"atk",score:230,damage:900},{e:"🛸",n:"UFO",kind:"atk",score:260,damage:980},
+  {e:"🔥",n:"火炎",kind:"atk",score:320,damage:1200},{e:"⚡",n:"雷",kind:"atk",score:340,damage:1140},{e:"☄️",n:"隕石",kind:"atk",score:380,damage:1350},{e:"🚀",n:"ロケット",kind:"atk",score:360,damage:1280}
+];
+
+const evo={"🐟":["🐟","🐠","🐡"],"🧶":["🧶","🧸","🎀"],"🥫":["🥫","🍖","🍗"],"❤️":["❤️","💖","💝"],"🍣":["🍣","🍱","🍽️"],"🌟":["🌟","✨","🌈"],"💎":["💎","🔷","👑"],"💣":["💣","🧨","💥"],"🪨":["🪨","⛰️","🌋"],"👾":["👾","☠️","💀"],"🛸":["🛸","🛰️","🌌"],"🔥":["🔥","🔥🔥","🌋"],"⚡":["⚡","🌩️","⚡💥"],"☄️":["☄️","🌠","💥"],"🚀":["🚀","🛰️","💥"]};
+
+const S={running:false,paused:false,counting:false,koLock:false,stage:1,score:0,combo:0,maxCombo:0,can:0,needCan:3,miss:0,damageTaken:0,catHp:23500,catMax:23500,gatorHp:8200,gatorMax:8200,pItem:null,cItem:null,pY:26,cY:26,pSpeed:1.10,cSpeed:0.94,cpuDecision:200,cpuResolving:false,laneH:255,lim:207,catBox:[],gatorBox:[],fever:false,feverUntil:0,shield:false,heart:0,ult:0,ultPower:false,ultPowerUntil:0,start:0,end:0,totalPaused:0,pauseStart:0,raf:null,lastFrame:0,uiFrame:0,lastPlayerEmoji:"",lastCpuEmoji:""};
+const boss=()=>bosses[Math.min(S.stage-1,bosses.length-1)];
+
+function iconOf(e,lv){return evo[e]?evo[e][lv-1]:e}
+function log(t){$("battleLog").textContent="ログ："+t}
+function toast(t){log(t);const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),550)}
+function danger(t){log(t);const e=$("danger");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),650)}
+function cpuStatus(t,active){log(t);$("cpuLane").classList.toggle("cpuActive",active)}
+function cacheLayout(){S.laneH=$("center").clientHeight||255;S.lim=S.laneH-48}
+function elapsed(){let base=(S.running?Date.now():S.end)-S.start-S.totalPaused;if(S.paused&&S.pauseStart)base-=Date.now()-S.pauseStart;return Math.max(0,base)/1000}
+function setFall(el,y){el.style.transform=`translate3d(-50%,${y}px,0)`}
+function centerOf(id){const r=$(id).getBoundingClientRect();const g=$("game").getBoundingClientRect();return{x:r.left-g.left+r.width/2,y:r.top-g.top+r.height/2}}
+function popText(id,text,targetId,dy=-12,time=320){const p=centerOf(targetId);const el=$(id);el.textContent=text;el.style.left=p.x+"px";el.style.top=(p.y+dy)+"px";el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),time)}
+
+function showEffectBurst(type,amount,targetId){
+  const isCat=targetId==="cat";
+  const e=$(isCat?"catEffect":"gatorEffect");
+  const label=e.querySelector(".effectBurstLabel");
+  const value=e.querySelector(".effectBurstValue");
+  const gameRect=$("game").getBoundingClientRect();
+  const box=$(isCat?"catSide":"gatorSide").querySelector(".characterBox");
+  const r=box.getBoundingClientRect();
+
+  e.classList.remove("damage","heal","show");
+
+  if(type==="heal"){
+    label.textContent="回復！";
+    value.textContent=`+${fmt(amount)}`;
+    e.classList.add("heal");
+  }else{
+    label.textContent="ダメージ！";
+    value.textContent=`-${fmt(amount)}`;
+    e.classList.add("damage");
+  }
+
+  const x=r.left-gameRect.left+r.width/2;
+  const y=r.top-gameRect.top-10;
+  e.style.left=x+"px";
+  e.style.top=Math.max(84,y)+"px";
+  void e.offsetWidth;
+  e.classList.add("show");
+}
+function showHeal(n,targetId="cat"){showEffectBurst("heal",n,targetId)}
+function showDamage(n,targetId="gator"){damageShake(targetId);showEffectBurst("damage",n,targetId)}
+
+function showKoText(text="ワニ撃破!!"){const e=$("koText");e.textContent=text;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1300)}
+function bossExplosion(text="ワニ撃破!!"){
+  sfx("ko");
+  const boom=$("boom"),gator=$("gator");
+  boom.classList.remove("show");
+  gator.classList.remove("boomed","bossShake");
+  void boom.offsetWidth;void gator.offsetWidth;
+  gator.classList.add("bossShake");
+  boom.classList.add("show");
+  setTimeout(()=>{gator.classList.remove("bossShake");gator.classList.add("boomed")},260);
+  showKoText(text);
+  setTimeout(()=>boom.classList.remove("show"),1300)
+}
+function flashChar(id,cls="hit",ms=120){const el=$(id);el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove(cls),ms)}
+function damageShake(id){const el=$(id);el.classList.remove("damaged");void el.offsetWidth;el.classList.add("damaged");clearTimeout(el._damageTimer);el._damageTimer=setTimeout(()=>el.classList.remove("damaged"),240)}
+
+function flyEmojiFromPoint(emoji,from,toId,done,duration=240,attack=false){
+  if(FX_COUNT>=6){if(done)done();return}
+  FX_COUNT++;
+  const to=centerOf(toId);
+  const e=document.createElement("div");
+  e.className=attack?"flyFx cpuAtkFx":"flyFx";
+  e.textContent=emoji;
+  e.style.left=(from.x-(attack?24:21))+"px";
+  e.style.top=(from.y-(attack?24:21))+"px";
+  e.style.opacity="1";
+  e.style.transform="translate3d(0,0,0) scale(1)";
+  $("game").appendChild(e);
+  const dx=to.x-from.x,dy=to.y-from.y;
+  requestAnimationFrame(()=>{e.style.transition=`transform ${duration}ms linear,opacity ${duration}ms linear`;e.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${attack?1.35:1.15})`;e.style.opacity=".9"});
+  setTimeout(()=>{e.remove();FX_COUNT=Math.max(0,FX_COUNT-1);if(done)done()},duration+30)
+}
+function flyEmoji(emoji,fromId,toId,done,duration=240){flyEmojiFromPoint(emoji,centerOf(fromId),toId,done,duration,false)}
+function cpuAttackFly(emoji,fromPoint,toId,done){flyEmojiFromPoint(emoji,fromPoint,toId,done,300,true)}
+function updateBoss(){const b=boss();$("gator").textContent=b.e;$("gatorName").textContent=`${b.e} ${b.n} CPU`}
+function updateHp(){const cp=Math.max(0,S.catHp/S.catMax*100),gp=Math.max(0,S.gatorHp/S.gatorMax*100);$("catHp").style.width=cp+"%";$("gatorHp").style.width=gp+"%";$("catHpText").textContent=`${fmt(S.catHp)} / ${fmt(S.catMax)}`;$("gatorHpText").textContent=`${fmt(S.gatorHp)} / ${fmt(S.gatorMax)}`}
+function renderGrid(side){const id=side==="cat"?"catGrid":"gatorGrid";const data=side==="cat"?S.catBox:S.gatorBox;const cells=[...$(id).children];cells.forEach((cell,i)=>{const entry=data[i];cell.className="cell"+(entry?"":" empty");if(entry){cell.textContent=iconOf(entry.e,entry.lv);if(entry.lv===2)cell.classList.add("lv2");if(entry.lv===3)cell.classList.add("lv3")}else cell.textContent=""})}
+function updateUI(){$("score").textContent=fmt(S.score);$("comboNum").textContent=S.combo;$("stage").textContent=S.stage;$("can").textContent=S.can;$("time").textContent=elapsed().toFixed(2);$("cat").textContent=cat().e;$("catName").textContent=`🐾 ${cat().n}`;$("ultFill").style.width=Math.min(100,S.ult)+"%";$("ultBtn").classList.toggle("ready",S.ult>=100);updateBoss();updateHp()}
+function makeGrid(id){const g=$(id);g.innerHTML="";for(let i=0;i<16;i++){const c=document.createElement("div");c.className="cell empty";g.appendChild(c)}}
+function renderCatSelect(){const list=$("catSelectList");if(!list)return;list.innerHTML="";catTypes.forEach(c=>{const card=document.createElement("div");card.className="catCard"+(selectedCatId===c.id?" selected":"");card.innerHTML=`<div class="catIcon">${c.e}</div><div class="catInfo"><b>${c.n}</b><span>${c.d}</span><div class="catStats">HP ${fmt(c.hp)} / 攻撃 ${Math.round(c.atk*100)}% / 防御 ${Math.round(c.def*100)}% / 回復 ${Math.round(c.heal*100)}%</div></div>`;card.onclick=()=>{sfx("select");selectedCatId=c.id;renderCatSelect()};list.appendChild(card)})}
+function gainUlt(v){let add=v*1.24;if(S.fever)add*=1.16;S.ult=Math.min(100,S.ult+add)}
+function directValue(item,targetSide){const stageRate=1+Math.max(0,S.stage-1)*0.012;if(item.kind==="cat")return Math.floor(item.heal*1.35);return Math.floor(item.damage*1.75*stageRate)}
+function bonusValue(item,targetSide,lv){const base=directValue(item,targetSide);if(item.kind==="cat"){if(lv===2)return Math.floor(base*1.35);return Math.floor(base*2.55)}if(lv===2)return Math.floor(base*1.42);return Math.floor(base*2.85)}
+function healCat(v){let m=0.60*cat().heal;if(S.fever)m*=1.12;const heal=Math.floor(v*m);S.catHp=Math.min(S.catMax,S.catHp+heal);sfx("heal");showHeal(heal,"cat");flashChar("cat","jump",120)}
+function healGator(v){const heal=Math.floor(v*0.60);S.gatorHp=Math.min(S.gatorMax,S.gatorHp+heal);sfx("heal");showHeal(heal,"gator")}
+function damageCat(v){let dmg=Math.floor(v*0.58);const stageRate=1+Math.max(0,S.stage-1)*0.005;dmg=Math.floor(dmg*stageRate);dmg=Math.floor(dmg*cat().def);if(S.fever)dmg=Math.floor(dmg*0.92);if(S.shield&&S.catHp-dmg<=0){S.shield=false;S.catHp=Math.max(1,Math.floor(S.catMax*0.30));sfx("heal");toast("ハートの加護で復活！");return}S.catHp-=dmg;S.damageTaken+=dmg;sfx("damage");showDamage(dmg,"cat");if(S.catHp<=0){S.catHp=0;updateUI();setTimeout(()=>endGame(false),180)}}
+function damageGator(v){if(S.koLock)return;let dmg=Math.floor(v*0.58*cat().atk);if(S.fever)dmg=Math.floor(dmg*1.25);if(S.ultPower)dmg=Math.floor(dmg*1.55);S.gatorHp=Math.max(0,S.gatorHp-dmg);sfx("damage");showDamage(dmg,"gator");if(S.gatorHp<=0)nextStageOrClear()}
+function applyDirect(item,targetSide){const v=directValue(item,targetSide);if(item.kind==="cat"){if(targetSide==="cat"){healCat(v);toast(`${item.e}${item.n}で猫回復！`)}else{healGator(v);toast(`${item.e}${item.n}でワニ回復！`)}}else{if(targetSide==="gator"){damageGator(v);toast(`${item.e}${item.n}がワニに命中！`)}else{damageCat(v);toast(`${item.e}${item.n}が猫に命中！`)}}return v}
+function applyBonus(item,targetSide,lv){const v=bonusValue(item,targetSide,lv);if(item.kind==="cat"){if(targetSide==="cat"){healCat(v);toast(`${iconOf(item.e,lv)}で猫追加回復！`)}else{healGator(v);toast(`${iconOf(item.e,lv)}でワニ追加回復！`)}}else{if(targetSide==="gator"){damageGator(v);toast(`${iconOf(item.e,lv)}でワニに追加ダメージ！`)}else{damageCat(v);toast(`${iconOf(item.e,lv)}で猫に追加ダメージ！`)}}if(targetSide==="gator")gainUlt(lv===2?10:18)}
+function processMeta(item,targetSide){if(targetSide!=="cat")return;if(item.e==="❤️"){S.heart++;if(S.heart%3===0){S.shield=true;toast("ハート3個！一回だけ死亡回避")}}if(item.e==="🥫"){S.can++;if(S.can>=S.needCan){S.can=0;S.catMax+=520;S.catHp=Math.min(S.catMax,S.catHp+900);sfx("heal");showHeal(900,"cat");toast("猫缶3個！最大HPアップ！")}}if(item.e==="🌟"){damageGator(1300+S.stage*70);gainUlt(12)}}
+function addToBox(side,item){const box=side==="cat"?S.catBox:S.gatorBox;const gridId=side==="cat"?"catGrid":"gatorGrid";const idx=box.findIndex(v=>v.e===item.e);if(idx<0){if(box.length>=16)box.shift();box.push({e:item.e,lv:1});renderGrid(side);return}const entry=box[idx];if(entry.lv===1){entry.lv=2;sfx("merge");renderGrid(side);popText("mergeText",`${item.e}+${item.e}=${iconOf(item.e,2)}`,gridId,-20,430);setTimeout(()=>{applyBonus(item,side,2);updateUI()},70);return}if(entry.lv===2){entry.lv=3;sfx("merge");renderGrid(side);popText("mergeText",`${iconOf(item.e,2)}+${item.e}=${iconOf(item.e,3)}`,gridId,-20,430);setTimeout(()=>{applyBonus(item,side,3);updateUI()},70);setTimeout(()=>{const i=box.findIndex(v=>v.e===item.e);if(i>-1)box.splice(i,1);renderGrid(side);toast(`${iconOf(item.e,3)}が消えた！`);updateUI()},320)}}
+function pool(){let p=[];p.push(items.find(it=>it.e==="🐟"),items.find(it=>it.e==="🐟"),items.find(it=>it.e==="🧶"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="❤️"),items.find(it=>it.e==="💣"),items.find(it=>it.e==="💣"),items.find(it=>it.e==="🪨"));if(S.catHp/S.catMax<0.50)p.push(items.find(it=>it.e==="❤️"),items.find(it=>it.e==="❤️"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="🐟"));if(S.stage>=5)p.push(items.find(it=>it.e==="🍣"),items.find(it=>it.e==="👾"),items.find(it=>it.e==="🛸"));if(S.stage>=10)p.push(items.find(it=>it.e==="🌟"),items.find(it=>it.e==="🔥"),items.find(it=>it.e==="⚡"));if(S.stage>=13)p.push(items.find(it=>it.e==="💣"),items.find(it=>it.e==="🪨"),items.find(it=>it.e==="👾"),items.find(it=>it.e==="❤️"));if(S.stage>=16)p.push(items.find(it=>it.e==="💎"),items.find(it=>it.e==="☄️"),items.find(it=>it.e==="🚀"));if(S.stage>=18)p.push(items.find(it=>it.e==="🔥"),items.find(it=>it.e==="⚡"),items.find(it=>it.e==="☄️"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="❤️"));return p.filter(Boolean)}
+function cpuDecisionRate(){const s=S.stage;if(s<=1)return .82;if(s<=3)return .76;if(s<=5)return .68;if(s<=7)return .60;if(s<=10)return .52;if(s<=12)return .46;if(s<=14)return .40;if(s<=15)return .36;if(s<=16)return .33;if(s<=17)return .31;if(s<=18)return .30;if(s<=19)return .29;if(s<=20)return .28;return .27}
+function stageSpeed(){const s=S.stage;if(s<=1)return {p:1.10,c:0.94};if(s<=2)return {p:1.24,c:1.04};if(s<=3)return {p:1.38,c:1.16};if(s<=4)return {p:1.54,c:1.28};if(s<=5)return {p:1.70,c:1.40};if(s<=7)return {p:1.90,c:1.56};if(s<=8)return {p:2.06,c:1.68};if(s<=10)return {p:2.22,c:1.82};if(s<=12)return {p:2.38,c:1.94};if(s<=14)return {p:2.52,c:2.04};if(s<=15)return {p:2.64,c:2.12};if(s<=16)return {p:2.74,c:2.20};if(s<=17)return {p:2.82,c:2.26};if(s<=18)return {p:2.88,c:2.30};if(s<=19)return {p:2.94,c:2.34};if(s<=20)return {p:3.00,c:2.38};return {p:3.06,c:2.42}}
+function resetPlayer(){if(S.koLock)return;const p=pool();let next=pick(p);if(S.lastPlayerEmoji&&next.e===S.lastPlayerEmoji)next=pick(p);S.pItem=next;S.lastPlayerEmoji=next.e;S.pY=26;$("catItem").textContent=S.pItem.e;$("catItem").style.opacity=1;setFall($("catItem"),S.pY);log(`操作レーン：${S.pItem.e}${S.pItem.n}`)}
+function resetCpu(){if(S.koLock)return;const p=pool();let next=pick(p);if(S.lastCpuEmoji&&next.e===S.lastCpuEmoji)next=pick(p);S.cItem=next;S.lastCpuEmoji=next.e;S.cY=26;S.cpuResolving=false;S.cpuDecision=Math.floor(S.laneH*cpuDecisionRate());S.cpuDecision=Math.max(46,Math.min(S.laneH-36,S.cpuDecision));$("cpuItem").textContent=S.cItem.e;$("cpuItem").style.opacity=1;setFall($("cpuItem"),S.cY);cpuStatus(`CPU待機中：${S.cItem.e}${S.cItem.n}`,false)}
+function startFever(){S.fever=true;S.feverUntil=Date.now()+5200;sfx("fever");const f=$("fever");f.classList.remove("on","run");void f.offsetWidth;f.classList.add("run");setTimeout(()=>{if(S.fever){f.classList.remove("run");f.classList.add("on")}},620);danger("✨FEVER突入！")}
+function addCombo(){S.combo++;sfx("tap");S.maxCombo=Math.max(S.maxCombo,S.combo);gainUlt(3.6);const c=$("combo");c.classList.remove("hit");void c.offsetWidth;c.classList.add("hit");if(S.combo%10===0)startFever()}
+function resetCombo(){S.combo=0;S.fever=false;$("fever").classList.remove("run","on")}
+function hitToTargetThenBox(item,fromId,charId,side,afterDirect){flyEmoji(item.e,fromId,charId,()=>{if(item.kind==="cat")flashChar(charId,"jump",120);else flashChar(charId,"hit",120);applyDirect(item,side);processMeta(item,side);updateUI();if(afterDirect)afterDirect();setTimeout(()=>{flyEmoji(item.e,charId,side==="cat"?"catGrid":"gatorGrid",()=>{addToBox(side,item);updateUI()},220)},50)},220)}
+function missDamage(){if(S.stage<=5)return 2500;if(S.stage<=10)return 2750;if(S.stage<=15)return 3000;if(S.stage<=18)return 3250;return 3500}
+function applyMissPenalty(reason){S.miss++;sfx("miss");resetCombo();damageCat(missDamage());toast(reason||`ミス！猫に${fmt(missDamage())}追加ダメージ！`)}
+function sendCat(){if(!S.running||S.paused||S.counting||S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;if(item.kind==="cat"){addCombo();S.score+=item.score;hitToTargetThenBox(item,"catItem","cat","cat")}else{addToBox("cat",item);applyDirect(item,"cat");applyMissPenalty(`${item.e}${item.n}を猫へ送ってミス！`)}setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},220)}
+function sendGator(){if(!S.running||S.paused||S.counting||S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;if(item.kind==="atk"){addCombo();gainUlt(7);S.score+=item.score;hitToTargetThenBox(item,"catItem","gator","gator")}else{addToBox("gator",item);applyDirect(item,"gator");applyMissPenalty(`${item.e}${item.n}をワニへ送ってミス！`)}setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},220)}
+function cpuAccuracy(){const s=S.stage;if(s<=1)return .32;if(s<=3)return .42;if(s<=5)return .54;if(s<=7)return .64;if(s<=10)return .74;if(s<=12)return .80;if(s<=14)return .84;if(s<=15)return .86;if(s<=16)return .87;if(s<=17)return .88;if(s<=18)return .86;if(s<=19)return .85;if(s<=20)return .84;return .83}
+function cpuResolve(){if(S.koLock||!S.cItem||S.cpuResolving||S.paused||S.counting)return;S.cpuResolving=true;const item=S.cItem;const startPoint=centerOf("cpuItem");S.cItem=null;$("cpuItem").style.opacity=0;const correct=Math.random()<cpuAccuracy();let targetChar,targetBox,targetSide,statusText;if(correct){if(item.kind==="atk"){targetChar="cat";targetBox="catGrid";targetSide="cat";statusText=`CPU攻撃仕分け：${item.e}→猫`}else{targetChar="gator";targetBox="gatorGrid";targetSide="gator";statusText=`CPU回復仕分け：${item.e}→ワニ`}}else{if(item.kind==="atk"){targetChar="gator";targetBox="gatorGrid";targetSide="gator";statusText=`CPU仕分けミス：${item.e}→ワニ`}else{targetChar="cat";targetBox="catGrid";targetSide="cat";statusText=`CPU仕分けミス：${item.e}→猫`}}cpuStatus(statusText,true);const firstFly=correct&&item.kind==="atk"?cb=>cpuAttackFly(item.e,startPoint,targetChar,cb):cb=>flyEmojiFromPoint(item.e,startPoint,targetChar,cb,260,false);firstFly(()=>{if(item.kind==="cat")flashChar(targetChar,"jump",120);else flashChar(targetChar,"hit",120);if(!correct&&targetSide==="cat"){applyMissPenalty(`CPUミスの巻き添え！猫に${fmt(missDamage())}追加ダメージ！`)}applyDirect(item,targetSide);processMeta(item,targetSide);updateUI();setTimeout(()=>{flyEmoji(item.e,targetChar,targetBox,()=>{addToBox(targetSide,item);updateUI()},220)},60)});setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetCpu()},620)}
+function missPlayer(){if(S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;addToBox("cat",item);applyMissPenalty(`${item.e}${item.n}を処理できず猫に直撃！`);updateUI();setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},80)}
+function missCpu(){if(S.koLock||!S.cItem)return;const item=S.cItem;S.cItem=null;S.cpuResolving=false;$("cpuItem").style.opacity=0;cpuStatus(`CPU処理失敗：${item.e}`,true);addToBox("gator",item);applyDirect(item,"gator");updateUI();setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetCpu()},100)}
+function useUlt(){if(!S.running||S.paused||S.counting||S.koLock||S.ult<100)return;sfx("ult");S.ult=0;S.ultPower=true;S.ultPowerUntil=Date.now()+2600;danger("🐾猫奥義にゃんこ流星斬！");flyEmoji("🌠","cat","gator",()=>{const dmg=Math.floor(2000+S.stage*45);damageGator(dmg);updateUI()},260);updateUI()}
+function nextStageOrClear(){if(S.koLock)return;S.koLock=true;S.gatorHp=0;updateUI();$("catItem").style.opacity=0;$("cpuItem").style.opacity=0;if(S.stage>=bosses.length){bossExplosion("ワニ王完全撃破!!");setTimeout(()=>endGame(true),1450);return}bossExplosion("ワニ撃破!!");S.score+=2500+S.stage*500;setTimeout(()=>danger(`STAGE ${S.stage+1}へ進行中...`),780);setTimeout(()=>{S.stage++;S.gatorMax=boss().hp;S.gatorHp=S.gatorMax;const sp=stageSpeed();S.pSpeed=sp.p;S.cSpeed=sp.c;S.gatorBox=[];S.koLock=false;$("gator").classList.remove("boomed","bossShake");$("gator").style.opacity=1;renderGrid("gator");danger(`STAGE ${S.stage} ${boss().n}`);resetPlayer();resetCpu();updateUI()},1550)}
+function tick(){const now=Date.now();if(S.fever&&now>S.feverUntil){S.fever=false;$("fever").classList.remove("run","on")}if(S.ultPower&&now>S.ultPowerUntil){S.ultPower=false;toast("奥義効果終了")}if(S.koLock)return;const sp=stageSpeed();S.pSpeed=sp.p;S.cSpeed=sp.c;S.pY+=S.pSpeed*2.25;S.cY+=S.cSpeed*2.25;setFall($("catItem"),S.pY);setFall($("cpuItem"),S.cY);if(S.pItem&&S.pY>S.lim)missPlayer();if(S.cItem&&!S.cpuResolving&&S.cY>=S.cpuDecision)cpuResolve();if(S.cItem&&!S.cpuResolving&&S.cY>S.lim)missCpu()}
+function loop(ts){if(!S.running)return;if(ts-S.lastFrame<33){S.raf=requestAnimationFrame(loop);return}S.lastFrame=ts;if(!S.paused&&!S.counting){tick();S.uiFrame++;if(S.uiFrame%4===0)updateUI()}S.raf=requestAnimationFrame(loop)}
+function brainAge(clear){if(clear)return 20;const stage=S.stage,miss=S.miss,combo=S.maxCombo,damageRate=S.damageTaken/Math.max(1,S.catMax*Math.max(1,stage));let age=65;age-=stage*1.25;if(combo>=100)age-=12;else if(combo>=80)age-=10;else if(combo>=60)age-=8;else if(combo>=40)age-=6;else if(combo>=25)age-=4;else if(combo>=12)age-=2;age+=miss*0.95;if(damageRate<0.20)age-=5;else if(damageRate<0.40)age-=2;else if(damageRate<0.70)age+=2;else if(damageRate<1.00)age+=5;else age+=8;if(stage>=20)age=Math.max(age,34);else if(stage>=18)age=Math.max(age,38);else if(stage>=15)age=Math.max(age,44);else if(stage>=10)age=Math.max(age,50);else age=Math.max(age,56);if(miss>=45)age=Math.max(age,58);else if(miss>=35)age=Math.max(age,52);else if(miss>=25)age=Math.max(age,46);else if(miss>=15)age=Math.max(age,38);return Math.max(20,Math.min(88,Math.round(age)))}
+function brainComment(age,clear){if(clear)return "変な博士「ワニ王撃破。反応、判断、集中力、すべて合格じゃ。」";if(age<=24)return "変な博士「反応速度はかなり若い。あとはミスを削れば完璧じゃ。」";if(age<=34)return "変な博士「かなり冴えておる。終盤の焦りだけ注意じゃな。」";if(age<=44)return "変な博士「反応は悪くない。だがミスが増えると一気に脳年齢が上がるぞ。」";if(age<=54)return "変な博士「終盤まで進めておるが、仕分けミスと被弾が多い。集中力の持久戦じゃ。」";if(age<=64)return "変な博士「前半は問題ない。後半の速度変化で判断が乱れておる。」";return "変な博士「かなり疲れておる。まずはミスを半分にするところからじゃ。」"}
+function beginCountdown(){S.counting=true;S.paused=true;const nums=["3","2","1","GO!"];const cd=$("countdown");let i=0;function next(){cd.textContent=nums[i];cd.classList.add("show");setTimeout(()=>{cd.classList.remove("show");i++;if(i<nums.length)setTimeout(next,120);else setTimeout(()=>{S.counting=false;S.paused=false;S.start=Date.now();S.totalPaused=0;S.pauseStart=0;log("バトル開始！")},100)},320)}next()}
+function startGame(){cancelAnimationFrame(S.raf);Object.assign(S,{running:true,paused:true,counting:true,koLock:false,stage:1,score:0,combo:0,maxCombo:0,can:0,miss:0,damageTaken:0,catBox:[],gatorBox:[],fever:false,feverUntil:0,shield:false,heart:0,ult:0,ultPower:false,ultPowerUntil:0,start:Date.now(),end:0,totalPaused:0,pauseStart:0,pSpeed:1.10,cSpeed:0.94,lastFrame:0,uiFrame:0,lastPlayerEmoji:"",lastCpuEmoji:""});$("startScreen").classList.add("hidden");$("charSelectScreen").classList.add("hidden");$("gameOverScreen").classList.add("hidden");$("fever").classList.remove("run","on");$("catEffect").classList.remove("damage","heal","show");$("gatorEffect").classList.remove("damage","heal","show");S.catMax=cat().hp;S.catHp=S.catMax;S.gatorMax=bosses[0].hp;S.gatorHp=S.gatorMax;$("koText").classList.remove("show");$("boom").classList.remove("show");$("gator").classList.remove("boomed","bossShake");$("gator").style.opacity=1;makeGrid("catGrid");makeGrid("gatorGrid");cacheLayout();resetPlayer();resetCpu();updateUI();renderGrid("cat");renderGrid("gator");S.raf=requestAnimationFrame(loop);requestAnimationFrame(()=>requestAnimationFrame(beginCountdown))}
+function endGame(clear){S.running=false;S.paused=true;S.end=Date.now();cancelAnimationFrame(S.raf);$("fever").classList.remove("run","on");stopBgm();const age=brainAge(clear);$("resultTitle").textContent=clear?"完全勝利！":"ゲーム終了";$("brainAge").textContent=age+"歳";$("brainComment").textContent=brainComment(age,clear);$("resultText").textContent=`スコア ${fmt(S.score)}`;$("resultDetail").innerHTML=`<div>使用猫：${cat().e}${cat().n}</div><div>脳内年齢：${age}歳</div><div>クリアタイム：${elapsed().toFixed(2)} 秒</div><div>最大コンボ：${S.maxCombo} HIT</div><div>ミス数：${S.miss}</div><div>被ダメージ：${fmt(S.damageTaken)}</div><div>到達ステージ：${S.stage} / ${bosses.length}</div>`;$("gameOverScreen").classList.remove("hidden")}
+function pauseGame(){if(!S.running||S.paused)return;S.paused=true;S.pauseStart=Date.now();toast("一時停止")}
+function resumeGame(){if(!S.running||!S.paused||S.counting)return;S.paused=false;if(S.pauseStart){S.totalPaused+=Date.now()-S.pauseStart;S.pauseStart=0}toast("再開")}
+function togglePause(){if(!S.running)return;S.paused?resumeGame():pauseGame()}
+function boot(){makeGrid("catGrid");makeGrid("gatorGrid");renderCatSelect();cacheLayout();$("score").textContent="0";$("stage").textContent="1";$("time").textContent="0.00";$("can").textContent="0";$("comboNum").textContent="0";$("catHpText").textContent="-- / --";$("gatorHpText").textContent="-- / --";$("catName").textContent=`🐾 ${cat().n}`;$("gatorName").textContent="🐊 ワニ王 CPU";$("ultFill").style.width="0%";log("スタートを押して開始");preloadSounds();setBgmStatus("スタート後にBGM再生")}
+
+let GLOBAL_PRESS_LOCK=false;
+
+function bindPress(id,fn){
+  const el=$(id);
+  if(!el)return;
+
+  const run=e=>{
+    if(e){
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if(GLOBAL_PRESS_LOCK)return;
+    GLOBAL_PRESS_LOCK=true;
+
+    fn();
+
+    setTimeout(()=>{
+      GLOBAL_PRESS_LOCK=false;
+    },220);
+  };
+
+  if(window.PointerEvent){
+    el.addEventListener("pointerdown",run,{passive:false});
+  }else{
+    el.addEventListener("click",run,{passive:false});
+  }
+}
+
+bindPress("leftBtn",sendCat);
+bindPress("rightBtn",sendGator);
+bindPress("ultBtn",useUlt);
+bindPress("bgmBtn",()=>{playBgm()});
+
+bindPress("startBtn",()=>{
+  preloadSounds();
+  sfx("start");
+
+  $("startScreen").classList.add("hidden");
+
+  setTimeout(()=>{
+    $("charSelectScreen").classList.remove("hidden");
+    renderCatSelect();
+    playBgm();
+  },120);
 });
-window.addEventListener("pagehide",function(){stopBgm()});
-window.addEventListener("blur",function(){stopBgm()});
-window.addEventListener("beforeunload",function(){stopBgm()});
-window.addEventListener("freeze",function(){stopBgm()});
-window.addEventListener("pageshow",function(){if(running&&!paused&&!manualStopAudio)playBgm()});
-window.addEventListener("focus",function(){if(running&&!paused&&!manualStopAudio)playBgm()});
 
-function loadData(){try{collection=JSON.parse(localStorage.getItem("nyankoCollection")||"{}")}catch(e){collection={}}collection["ノーマル猫"]=true;if(!collection[selectedCatName])selectedCatName="ノーマル猫"}
-function saveData(){localStorage.setItem("nyankoCollection",JSON.stringify(collection))}
-function saveSkin(){localStorage.setItem("nyankoSelectedCat",selectedCatName)}
-function selectedEmoji(){var c=catCards.find(function(x){return x.name===selectedCatName});return c?c.emoji:"😺"}
-function renderCat(face){var badge="";if(face==="good")badge="😸";if(face==="miss")badge="🙀";if(face==="level")badge="😻";if(face==="angry")badge="😾";el.cat.innerHTML="<span>"+selectedEmoji()+"</span>"+(badge?'<span class="faceBadge">'+badge+"</span>":"");if(face){clearTimeout(window.catFaceTimer);window.catFaceTimer=setTimeout(function(){renderCat("")},520)}}
-function show(t){el.msg.textContent=t;el.msg.style.opacity="1";clearTimeout(window.msgTimer);window.msgTimer=setTimeout(function(){el.msg.style.opacity="0"},650)}
-function showSkinGet(card){
-var b=$("skinGetBanner");
-if(!b)return;
-b.innerHTML="🎁✨超レア猫スキンGET！✨<br>"+card.emoji+" "+card.name;
-b.classList.remove("hidden","show");
-void b.offsetWidth;
-b.classList.add("show");
-setTimeout(function(){b.classList.add("hidden");b.classList.remove("show")},1900)
-}
-function feverSweep(){el.feverBg.classList.remove("run");void el.feverBg.offsetWidth;el.feverBg.classList.add("run");clearTimeout(feverFxTimer);feverFxTimer=setTimeout(function(){el.feverBg.classList.remove("run")},1000)}
-function comboHitPop(){el.comboBox.classList.remove("hit");void el.comboBox.offsetWidth;el.comboBox.classList.add("hit")}
-function centerX(){return el.board.clientWidth/2-29}
-function normAnswer(a){if(a==="cat"||a==="left")return"cat";if(a==="gator"||a==="trash"||a==="right")return"gator";return a}
-function laneX(a){a=normAnswer(a);return a==="cat"?el.board.clientWidth*.25-29:el.board.clientWidth*.75-29}
-function fallTop(){return 88}
-function fallBottom(){return el.board.clientHeight-175}
-function boss(){return bosses[Math.min(stage-1,20)]}
-function updateBoss(){var b=boss();el.gator.textContent=b[0];el.stageName.textContent=b[1];if(stage===21){el.gator.style.fontSize="58px";el.gator.style.filter="drop-shadow(0 0 12px #ffd84a) drop-shadow(0 6px #0008)"}else{el.gator.style.fontSize="40px";el.gator.style.filter="drop-shadow(0 6px #0008)"}}
-function updateHp(){gatorMaxHp=boss()[2];if(gatorHp>gatorMaxHp)gatorHp=gatorMaxHp;var pct=Math.max(0,Math.min(100,gatorHp/gatorMaxHp*100));el.gatorHpBar.style.width=pct+"%";el.gatorHpText.textContent="HP "+Math.ceil(gatorHp)+"/"+gatorMaxHp}
-function getPlayTime(){return running?((Date.now()-startClock)/1000).toFixed(2):"0.00"}
-function comboRate(){return fever?2:1+Math.min(combo,30)*0.03}
-function updateCombo(){if(el.comboBox)el.comboBox.innerHTML="<b>HIT COMBO</b><span>"+combo+"</span><i>HIT</i><em>x"+comboRate().toFixed(1)+"</em>"}
-function startFever(){fever=true;feverEnd=Date.now()+5000;feverSweep();updateCombo()}
-function checkFever(){if(fever&&Date.now()>feverEnd){fever=false;updateCombo()}}
-function addCombo(){combo++;if(combo>maxCombo)maxCombo=combo;if(combo>0&&combo%10===0)startFever();updateCombo();comboHitPop()}
-function resetCombo(){combo=0;fever=false;updateCombo();comboHitPop()}
-function update(){el.score.textContent=score;el.stageNum.textContent=stage;if(el.timeTop)el.timeTop.textContent=getPlayTime();if(el.catLife)el.catLife.textContent="❤️".repeat(Math.max(0,lives))+"🖤".repeat(Math.max(0,5-lives));updateHp();updateCombo()}
-function updateTimer(){el.timer.textContent="";el.timer.style.display="none"}
+bindPress("charDecideBtn",()=>{
+  sfx("start");
+  $("charSelectScreen").classList.add("hidden");
 
-function refillBag(){
-itemBag=[items[0],items[0],items[1],items[1],items[2],items[5],items[5],items[6],items[6]];
-if(score>=1200)itemBag.push(items[0],items[1],items[5],items[6]);
-if(score>=2500)itemBag.push(items[2],items[5],items[6]);
-if(score>=7000)itemBag.push(items[5],items[6]);
-if(score>=1200){var healRate=lives<5?.32:.10;if(Math.random()<healRate)itemBag.push(items[4])}
-if(giftAllowed&&!giftDropped&&score>=12000&&Math.random()<.35)itemBag.push(items[3]);
-if(giftAllowed&&!giftDropped&&score>=50000&&Math.random()<.35)itemBag.push(items[3]);
-for(var i=itemBag.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=itemBag[i];itemBag[i]=itemBag[j];itemBag[j]=tmp}
-}
+  setTimeout(()=>{
+    startGame();
+  },120);
+});
 
-function pickItem(){if(itemBag.length===0)refillBag();var p=itemBag.pop();if(p&&p.gift)giftDropped=true;return p}
-function clearAliens(){aliens.forEach(function(a){a.el.remove()});aliens=[]}
+bindPress("retryBtn",()=>{
+  sfx("start");
+  $("gameOverScreen").classList.add("hidden");
 
-function spawnAlienMaybe(){
-if(!running||paused)return;
-checkFever();
-if(Date.now()<nextAlienAt)return;
-if(stage<2){nextAlienAt=Date.now()+2600;return}
-var count=Math.min(2+Math.floor(stage/3),7),pool=["👽","🛸","☄️","🛰️","👾","🦠","⚡","💀"];
-for(var s=0;s<count;s++){
-var d=document.createElement("div");
-d.className="alien";
-d.textContent=pool[Math.floor(Math.random()*pool.length)];
-var size=Math.min(120,38+stage*4+Math.random()*20);
-d.style.fontSize=size+"px";
-var fromLeft=Math.random()<.5,ax=fromLeft?-120:el.board.clientWidth+120,ay=95+Math.random()*Math.max(70,el.board.clientHeight-315);
-aliens.push({el:d,x:ax,y:ay,dir:fromLeft?1:-1,speed:3.6+stage*.52+Math.random()*(3.2+stage*.18),hit:46+stage*3+Math.random()*18});
-d.style.left=ax+"px";
-d.style.top=ay+"px";
-el.board.appendChild(d)
-}
-nextAlienAt=Date.now()+Math.max(180,1600-stage*85)+Math.random()*Math.max(260,1150-stage*38)
-}
+  setTimeout(()=>{
+    $("charSelectScreen").classList.remove("hidden");
+    renderCatSelect();
+    playBgm();
+  },120);
+});
 
-function moveAliens(){
-var px=x+36,py=y+36;
-aliens=aliens.filter(function(a){
-a.x+=a.dir*a.speed;
-a.y+=Math.sin(Date.now()/120+a.x*.01)*.9;
-a.el.style.left=a.x+"px";
-a.el.style.top=a.y+"px";
-var cx=a.x+28,cy=a.y+28;
-if(Math.abs(px-cx)<a.hit&&Math.abs(py-cy)<a.hit){
-score=Math.max(0,score-(60+stage*18));
-show(a.el.textContent+" じゃま！");
-renderCat("angry");
-a.el.remove();
-update();
-return false
-}
-if(a.x<-180||a.x>el.board.clientWidth+180){a.el.remove();return false}
-return true
-})
-}
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")sendCat();
+  if(e.key==="ArrowRight")sendGator();
+  if(e.key===" ")togglePause();
+  if(e.key==="Enter"){
+    if(!$("charSelectScreen").classList.contains("hidden"))startGame();
+    else useUlt();
+  }
+});
 
-function renderChains(){el.catChain.textContent=chains.cat.join("");el.gatorChain.textContent=chains.gator.join("")}
-function addChain(a,emoji){a=normAnswer(a);if(!chains[a])chains[a]=[];chains[a].push(emoji);if(chains[a].length>8)chains[a].shift();checkChain(a);renderChains()}
-function checkChain(a){var arr=chains[a],changed=true;while(changed){changed=false;var counts={};arr.forEach(function(e){counts[e]=(counts[e]||0)+1});for(var item in counts){if(counts[item]>=2){arr.splice(arr.indexOf(item),1);arr.splice(arr.indexOf(item),1);var m=mergeMap[item];if(m==="CLEAR"){score+=500*stage;show(item+"×2 消滅！+"+(500*stage))}else{arr.push(m);score+=120*stage;show(item+"×2 → "+m)}changed=true;break}}}update()}
+window.addEventListener("resize",cacheLayout);
 
-function damageGator(dmg){
-dmg=Math.floor(dmg*(fever?2:1));
-gatorHp-=dmg;
-el.gator.style.transform="translateX(-50%) scale(1.18)";
-setTimeout(function(){el.gator.style.transform="translateX(-50%) scale(1)"},120);
-show("🐊に"+dmg+"ダメージ！");
-if(gatorHp<=0){
-var reward=500*stage+combo*20;
-coin+=stage*10;
-score+=reward;
-if(stage<21){
-stage++;
-v=boss()[3];
-gatorHp=boss()[2];
-updateBoss();
-updateHp()
-}else{
-show("全クリ！");
-endGame();
-return
-}
-}
-update()
-}
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    stopBgm();
+    if(S.running && !S.paused){
+      pauseGame();
+    }
+  }
+});
 
-function healLife(){if(lives<5){lives++;show("体力回復！");renderCat("level")}else{score+=80;show("体力満タン +80")}}
-function gainFood(){food++;if(food>=needFood){food-=needFood;needFood+=2;show("猫が成長！");renderCat("level")}else show("猫缶 "+food+"/"+needFood)}
-function openGift(){
-var card=catCards[Math.floor(Math.random()*catCards.length)];
-if(collection[card.name]){
-score+=50;
-show("重複！猫缶+1");
-gainFood()
-}else{
-collection[card.name]=true;
-selectedCatName=card.name;
-saveData();
-saveSkin();
-renderCat("");
-showSkinGet(card);
-show(card.name+" GET!")
-}
-renderBook()
-}
+window.addEventListener("pagehide",()=>{
+  stopBgm();
+});
 
-function judge(a){
-a=normAnswer(a);
-var correct=normAnswer(current.a);
-if(a===correct){
-addCombo();
-var add=Math.floor(current.p*stage*comboRate());
-score+=add;
-renderCat("good");
-addChain(a,current.e);
-if(current.food)gainFood();
-if(current.heal)healLife();
-if(current.gift)openGift();
-if(current.damage)damageGator(current.damage+stage*6)
-}else{
-resetCombo();
-lives--;
-score=Math.max(0,score-30);
-show("MISS! 残り"+lives);
-renderCat("miss");
-if(lives<=0){endGame();return}
-}
-update();
-setTimeout(spawn,150)
-}
+window.addEventListener("blur",()=>{
+  stopBgm();
+});
 
-function choose(a){
-a=normAnswer(a);
-if(!running||paused||judging||!current)return;
-playBgm();
-judging=true;
-x=laneX(a);
-y=fallBottom();
-place();
-setTimeout(function(){judge(a)},100)
-}
-
-function place(){el.player.style.left=x+"px";el.player.style.top=y+"px"}
-function spawn(){if(!running||paused)return;judging=true;current=null;el.player.textContent="？";el.player.style.opacity="0";x=(stage===21)?8+Math.random()*(el.board.clientWidth-88):centerX();y=fallTop();place();setTimeout(function(){if(!running||paused)return;current=pickItem();el.player.textContent=current.e;el.player.style.opacity="1";judging=false},stage===21?50:120)}
-
-function loop(){
-if(!running)return;
-if(paused){if(el.timeTop)el.timeTop.textContent=getPlayTime();loopId=requestAnimationFrame(loop);return}
-if(stage===21){
-chaosTick++;
-if(chaosTick%10===0){v=8.5+Math.random()*5.5;chaosVX=Math.random()*4.8-2.4}
-x+=chaosVX;
-if(x<6)x=6;
-if(x>el.board.clientWidth-78)x=el.board.clientWidth-78
-}
-spawnAlienMaybe();
-moveAliens();
-y+=v;
-place();
-if(el.timeTop)el.timeTop.textContent=getPlayTime();
-if(!judging&&y>fallBottom()){
-judging=true;
-lives--;
-show("時間切れ！ 残り"+lives);
-renderCat("angry");
-if(lives<=0){endGame();return}
-update();
-setTimeout(spawn,230)
-}
-loopId=requestAnimationFrame(loop)
-}
-
-function startGame(){
-manualStopAudio=false;
-running=true;
-paused=false;
-judging=false;
-resetBgm();
-kickBgm();
-cancelAnimationFrame(loopId);
-clearAliens();
-score=0;
-stage=1;
-lives=5;
-food=0;
-needFood=3;
-combo=0;
-maxCombo=0;
-fever=false;
-coin=0;
-chains={cat:[],gator:[]};
-itemBag=[];
-v=boss()[3];
-gatorHp=boss()[2];
-giftAllowed=Math.random()<.05;
-giftDropped=false;
-nextAlienAt=Date.now()+2200;
-startClock=Date.now();
-el.startScreen.classList.add("hidden");
-el.gameoverScreen.classList.add("hidden");
-el.bookScreen.classList.add("hidden");
-el.feverBg.classList.remove("run");
-renderCat("");
-updateBoss();
-updateHp();
-renderChains();
-update();
-spawn();
-loop()
-}
-
-function brainAge(){var age=80-Math.floor(score/3500)-stage;if(score<1000)age=88+Math.floor(Math.random()*8);if(age<18)age=18;if(age>99)age=99;return age}
-
-function endGame(){
-running=false;
-paused=false;
-judging=true;
-manualStopAudio=true;
-cancelAnimationFrame(loopId);
-clearAliens();
-resetBgm();
-el.brainAge.textContent=brainAge()+"歳";
-el.finalScore.textContent="スコア："+score+" / 最大コンボ："+maxCombo+" / ワニ："+stage+" / 図鑑："+ownedCount()+"/7";
-el.gameoverScreen.classList.remove("hidden")
-}
-
-function ownedCount(){return catCards.filter(function(c){return collection[c.name]}).length}
-function renderBook(){el.bookList.innerHTML="";el.bookCount.textContent=ownedCount()+" / "+catCards.length;catCards.forEach(function(card){var owned=collection[card.name],div=document.createElement("div");div.className="card"+(owned?"":" locked")+(owned&&selectedCatName===card.name?" selectedSkin":"");div.innerHTML="<span class='emoji'>"+(owned?card.emoji:"？")+"</span><div>"+(owned?card.name:"未入手")+"</div>"+(owned&&selectedCatName===card.name?"<div class='skinNote'>使用中</div>":"");if(owned)div.onclick=function(){selectedCatName=card.name;saveSkin();renderCat("");renderBook();show("スキン変更！")};el.bookList.appendChild(div)})}
-
-function openBook(){
-renderBook();
-if(running&&!paused)paused=true;
-stopBgm();
-el.bookScreen.classList.remove("hidden")
-}
-
-function closeBook(){
-el.bookScreen.classList.add("hidden");
-if(running&&paused&&!manualStopAudio){
-paused=false;
-playBgm()
-}
-}
-
-function bind(id,fn){
-var b=$(id);
-if(!b)return;
-function run(e){
-e.preventDefault();
-e.stopPropagation();
-if(id==="startBtn"||id==="retryBtn"){
-manualStopAudio=false;
-running=true;
-paused=false;
-resetBgm();
-kickBgm()
-}
-fn()
-}
-b.onclick=run;
-b.ontouchstart=run;
-b.onpointerdown=run
-}
-
-function bootGame(){
-initEls();
-loadData();
-renderCat("");
-updateBoss();
-updateHp();
-renderBook();
-update();
-bind("startBtn",startGame);
-bind("retryBtn",startGame);
-bind("startBookBtn",openBook);
-bind("gameoverBookBtn",openBook);
-bind("closeBookBtn",closeBook);
-bind("catBtn",function(){choose("cat")});
-bind("gatorBtn",function(){choose("gator")});
-document.body.addEventListener("touchstart",function(){if(running&&!paused&&!manualStopAudio)playBgm()},{passive:true});
-document.body.addEventListener("click",function(){if(running&&!paused&&!manualStopAudio)playBgm()})
-}
-
-if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",bootGame)}else{bootGame()}
+boot();
 </script>
 </body>
 </html>
