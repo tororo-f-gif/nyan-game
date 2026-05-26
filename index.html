@@ -584,15 +584,28 @@ function showDamage(n,targetId="gator"){damageShake(targetId);showEffectBurst("d
 function showKoText(text="ワニ撃破!!"){const e=$("koText");e.textContent=text;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1300)}
 function bossExplosion(text="ワニ撃破!!"){
   sfx("ko");
-  const boom=$("boom"),gator=$("gator");
+
+  const boom=$("boom");
+  const gator=$("gator");
+
   boom.classList.remove("show");
-  gator.classList.remove("boomed","bossShake");
-  void boom.offsetWidth;void gator.offsetWidth;
-  gator.classList.add("bossShake");
+  gator.classList.remove("boomed","bossShake","damaged","hit","jump");
+
+  void boom.offsetWidth;
+
   boom.classList.add("show");
-  setTimeout(()=>{gator.classList.remove("bossShake");gator.classList.add("boomed")},260);
   showKoText(text);
-  setTimeout(()=>boom.classList.remove("show"),1300)
+
+  clearTimeout(bossExplosion._t1);
+  clearTimeout(bossExplosion._t2);
+
+  bossExplosion._t1=setTimeout(()=>{
+    boom.classList.remove("show");
+  },900);
+
+  bossExplosion._t2=setTimeout(()=>{
+    gator.classList.remove("boomed","bossShake","damaged","hit","jump");
+  },920);
 }
 function flashChar(id,cls="hit",ms=120){const el=$(id);el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove(cls),ms)}
 function damageShake(id){const el=$(id);el.classList.remove("damaged");void el.offsetWidth;el.classList.add("damaged");clearTimeout(el._damageTimer);el._damageTimer=setTimeout(()=>el.classList.remove("damaged"),240)}
@@ -634,23 +647,77 @@ function processMeta(item,targetSide){if(targetSide!=="cat")return;if(item.e==="
 function addToBox(side,item){const box=side==="cat"?S.catBox:S.gatorBox;const gridId=side==="cat"?"catGrid":"gatorGrid";const idx=box.findIndex(v=>v.e===item.e);if(idx<0){if(box.length>=16)box.shift();box.push({e:item.e,lv:1});renderGrid(side);return}const entry=box[idx];if(entry.lv===1){entry.lv=2;sfx("merge");renderGrid(side);popText("mergeText",`${item.e}+${item.e}=${iconOf(item.e,2)}`,gridId,-20,430);setTimeout(()=>{applyBonus(item,side,2);updateUI()},70);return}if(entry.lv===2){entry.lv=3;sfx("merge");renderGrid(side);popText("mergeText",`${iconOf(item.e,2)}+${item.e}=${iconOf(item.e,3)}`,gridId,-20,430);setTimeout(()=>{applyBonus(item,side,3);updateUI()},70);setTimeout(()=>{const i=box.findIndex(v=>v.e===item.e);if(i>-1)box.splice(i,1);renderGrid(side);toast(`${iconOf(item.e,3)}が消えた！`);updateUI()},320)}}
 function pool(){let p=[];p.push(items.find(it=>it.e==="🐟"),items.find(it=>it.e==="🐟"),items.find(it=>it.e==="🧶"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="❤️"),items.find(it=>it.e==="💣"),items.find(it=>it.e==="💣"),items.find(it=>it.e==="🪨"));if(S.catHp/S.catMax<0.50)p.push(items.find(it=>it.e==="❤️"),items.find(it=>it.e==="❤️"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="🐟"));if(S.stage>=5)p.push(items.find(it=>it.e==="🍣"),items.find(it=>it.e==="👾"),items.find(it=>it.e==="🛸"));if(S.stage>=10)p.push(items.find(it=>it.e==="🌟"),items.find(it=>it.e==="🔥"),items.find(it=>it.e==="⚡"));if(S.stage>=13)p.push(items.find(it=>it.e==="💣"),items.find(it=>it.e==="🪨"),items.find(it=>it.e==="👾"),items.find(it=>it.e==="❤️"));if(S.stage>=16)p.push(items.find(it=>it.e==="💎"),items.find(it=>it.e==="☄️"),items.find(it=>it.e==="🚀"));if(S.stage>=18)p.push(items.find(it=>it.e==="🔥"),items.find(it=>it.e==="⚡"),items.find(it=>it.e==="☄️"),items.find(it=>it.e==="🥫"),items.find(it=>it.e==="❤️"));return p.filter(Boolean)}
 function cpuDecisionRate(){const s=S.stage;if(s<=1)return .82;if(s<=3)return .76;if(s<=5)return .68;if(s<=7)return .60;if(s<=10)return .52;if(s<=12)return .46;if(s<=14)return .40;if(s<=15)return .36;if(s<=16)return .33;if(s<=17)return .31;if(s<=18)return .30;if(s<=19)return .29;if(s<=20)return .28;return .27}
-function stageSpeed(){const s=S.stage;if(s<=1)return {p:1.10,c:0.94};if(s<=2)return {p:1.24,c:1.04};if(s<=3)return {p:1.38,c:1.16};if(s<=4)return {p:1.54,c:1.28};if(s<=5)return {p:1.70,c:1.40};if(s<=7)return {p:1.90,c:1.56};if(s<=8)return {p:2.06,c:1.68};if(s<=10)return {p:2.22,c:1.82};if(s<=12)return {p:2.38,c:1.94};if(s<=14)return {p:2.52,c:2.04};if(s<=15)return {p:2.64,c:2.12};if(s<=16)return {p:2.74,c:2.20};if(s<=17)return {p:2.82,c:2.26};if(s<=18)return {p:2.88,c:2.30};if(s<=19)return {p:2.94,c:2.34};if(s<=20)return {p:3.00,c:2.38};return {p:3.06,c:2.42}}
+function stageSpeed(){const s=S.stage;if(s<=1)return {p:1.10,c:0.94};if(s<=2)return {p:1.24,c:1.04};if(s<=3)return {p:1.38,c:1.16};if(s<=4)return {p:1.54,c:1.28};if(s<=5)return {p:1.70,c:1.40};if(s<=7)return {p:1.90,c:1.56};if(s<=8)return {p:2.06,c:1.68};if(s<=10)return {p:2.22,c:1.82};if(s<=12)return {p:2.30,c:1.88};if(s<=14)return {p:2.40,c:1.96};if(s<=16)return {p:2.50,c:2.04};if(s<=18)return {p:2.60,c:2.12};if(s<=20)return {p:2.70,c:2.20};return {p:2.78,c:2.26}}
 function resetPlayer(){if(S.koLock)return;const p=pool();let next=pick(p);if(S.lastPlayerEmoji&&next.e===S.lastPlayerEmoji)next=pick(p);S.pItem=next;S.lastPlayerEmoji=next.e;S.pY=26;$("catItem").textContent=S.pItem.e;$("catItem").style.opacity=1;setFall($("catItem"),S.pY);log(`操作レーン：${S.pItem.e}${S.pItem.n}`)}
 function resetCpu(){if(S.koLock)return;const p=pool();let next=pick(p);if(S.lastCpuEmoji&&next.e===S.lastCpuEmoji)next=pick(p);S.cItem=next;S.lastCpuEmoji=next.e;S.cY=26;S.cpuResolving=false;S.cpuDecision=Math.floor(S.laneH*cpuDecisionRate());S.cpuDecision=Math.max(46,Math.min(S.laneH-36,S.cpuDecision));$("cpuItem").textContent=S.cItem.e;$("cpuItem").style.opacity=1;setFall($("cpuItem"),S.cY);cpuStatus(`CPU待機中：${S.cItem.e}${S.cItem.n}`,false)}
 function startFever(){S.fever=true;S.feverUntil=Date.now()+5200;sfx("fever");const f=$("fever");f.classList.remove("on","run");void f.offsetWidth;f.classList.add("run");setTimeout(()=>{if(S.fever){f.classList.remove("run");f.classList.add("on")}},620);danger("✨FEVER突入！")}
 function addCombo(){S.combo++;sfx("tap");S.maxCombo=Math.max(S.maxCombo,S.combo);gainUlt(3.6);const c=$("combo");c.classList.remove("hit");void c.offsetWidth;c.classList.add("hit");if(S.combo%10===0)startFever()}
 function resetCombo(){S.combo=0;S.fever=false;$("fever").classList.remove("run","on")}
 function hitToTargetThenBox(item,fromId,charId,side,afterDirect){flyEmoji(item.e,fromId,charId,()=>{if(item.kind==="cat")flashChar(charId,"jump",120);else flashChar(charId,"hit",120);applyDirect(item,side);processMeta(item,side);updateUI();if(afterDirect)afterDirect();setTimeout(()=>{flyEmoji(item.e,charId,side==="cat"?"catGrid":"gatorGrid",()=>{addToBox(side,item);updateUI()},220)},50)},220)}
-function missDamage(){if(S.stage<=5)return 2500;if(S.stage<=10)return 2750;if(S.stage<=15)return 3000;if(S.stage<=18)return 3250;return 3500}
+function missDamage(){return 2500}
 function applyMissPenalty(reason){S.miss++;sfx("miss");resetCombo();damageCat(missDamage());toast(reason||`ミス！猫に${fmt(missDamage())}追加ダメージ！`)}
 function sendCat(){if(!S.running||S.paused||S.counting||S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;if(item.kind==="cat"){addCombo();S.score+=item.score;hitToTargetThenBox(item,"catItem","cat","cat")}else{addToBox("cat",item);applyDirect(item,"cat");applyMissPenalty(`${item.e}${item.n}を猫へ送ってミス！`)}setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},220)}
 function sendGator(){if(!S.running||S.paused||S.counting||S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;if(item.kind==="atk"){addCombo();gainUlt(7);S.score+=item.score;hitToTargetThenBox(item,"catItem","gator","gator")}else{addToBox("gator",item);applyDirect(item,"gator");applyMissPenalty(`${item.e}${item.n}をワニへ送ってミス！`)}setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},220)}
-function cpuAccuracy(){const s=S.stage;if(s<=1)return .32;if(s<=3)return .42;if(s<=5)return .54;if(s<=7)return .64;if(s<=10)return .74;if(s<=12)return .80;if(s<=14)return .84;if(s<=15)return .86;if(s<=16)return .87;if(s<=17)return .88;if(s<=18)return .86;if(s<=19)return .85;if(s<=20)return .84;return .83}
+function cpuAccuracy(){const s=S.stage;if(s<=1)return .32;if(s<=3)return .42;if(s<=5)return .54;if(s<=7)return .64;if(s<=10)return .74;if(s<=12)return .75;if(s<=14)return .77;if(s<=16)return .78;if(s<=18)return .79;if(s<=20)return .80;return .81}
 function cpuResolve(){if(S.koLock||!S.cItem||S.cpuResolving||S.paused||S.counting)return;S.cpuResolving=true;const item=S.cItem;const startPoint=centerOf("cpuItem");S.cItem=null;$("cpuItem").style.opacity=0;const correct=Math.random()<cpuAccuracy();let targetChar,targetBox,targetSide,statusText;if(correct){if(item.kind==="atk"){targetChar="cat";targetBox="catGrid";targetSide="cat";statusText=`CPU攻撃仕分け：${item.e}→猫`}else{targetChar="gator";targetBox="gatorGrid";targetSide="gator";statusText=`CPU回復仕分け：${item.e}→ワニ`}}else{if(item.kind==="atk"){targetChar="gator";targetBox="gatorGrid";targetSide="gator";statusText=`CPU仕分けミス：${item.e}→ワニ`}else{targetChar="cat";targetBox="catGrid";targetSide="cat";statusText=`CPU仕分けミス：${item.e}→猫`}}cpuStatus(statusText,true);const firstFly=correct&&item.kind==="atk"?cb=>cpuAttackFly(item.e,startPoint,targetChar,cb):cb=>flyEmojiFromPoint(item.e,startPoint,targetChar,cb,260,false);firstFly(()=>{if(item.kind==="cat")flashChar(targetChar,"jump",120);else flashChar(targetChar,"hit",120);if(!correct&&targetSide==="cat"){applyMissPenalty(`CPUミスの巻き添え！猫に${fmt(missDamage())}追加ダメージ！`)}applyDirect(item,targetSide);processMeta(item,targetSide);updateUI();setTimeout(()=>{flyEmoji(item.e,targetChar,targetBox,()=>{addToBox(targetSide,item);updateUI()},220)},60)});setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetCpu()},620)}
 function missPlayer(){if(S.koLock||!S.pItem)return;const item=S.pItem;S.pItem=null;$("catItem").style.opacity=.2;addToBox("cat",item);applyMissPenalty(`${item.e}${item.n}を処理できず猫に直撃！`);updateUI();setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetPlayer()},80)}
 function missCpu(){if(S.koLock||!S.cItem)return;const item=S.cItem;S.cItem=null;S.cpuResolving=false;$("cpuItem").style.opacity=0;cpuStatus(`CPU処理失敗：${item.e}`,true);addToBox("gator",item);applyDirect(item,"gator");updateUI();setTimeout(()=>{if(S.running&&!S.paused&&!S.koLock)resetCpu()},100)}
 function useUlt(){if(!S.running||S.paused||S.counting||S.koLock||S.ult<100)return;sfx("ult");S.ult=0;S.ultPower=true;S.ultPowerUntil=Date.now()+2600;danger("🐾猫奥義にゃんこ流星斬！");flyEmoji("🌠","cat","gator",()=>{const dmg=Math.floor(2000+S.stage*45);damageGator(dmg);updateUI()},260);updateUI()}
-function nextStageOrClear(){if(S.koLock)return;S.koLock=true;S.gatorHp=0;updateUI();$("catItem").style.opacity=0;$("cpuItem").style.opacity=0;if(S.stage>=bosses.length){bossExplosion("ワニ王完全撃破!!");setTimeout(()=>endGame(true),1450);return}bossExplosion("ワニ撃破!!");S.score+=2500+S.stage*500;setTimeout(()=>danger(`STAGE ${S.stage+1}へ進行中...`),780);setTimeout(()=>{S.stage++;S.gatorMax=boss().hp;S.gatorHp=S.gatorMax;const sp=stageSpeed();S.pSpeed=sp.p;S.cSpeed=sp.c;S.gatorBox=[];S.koLock=false;$("gator").classList.remove("boomed","bossShake");$("gator").style.opacity=1;renderGrid("gator");danger(`STAGE ${S.stage} ${boss().n}`);resetPlayer();resetCpu();updateUI()},1550)}
+function nextStageOrClear(){
+  if(S.koLock)return;
+
+  S.koLock=true;
+  S.gatorHp=0;
+  updateUI();
+
+  $("catItem").style.opacity=0;
+  $("cpuItem").style.opacity=0;
+
+  clearTimeout(nextStageOrClear._t1);
+  clearTimeout(nextStageOrClear._t2);
+
+  if(S.stage>=bosses.length){
+    bossExplosion("ワニ王完全撃破!!");
+
+    nextStageOrClear._t1=setTimeout(()=>{
+      endGame(true);
+    },1000);
+
+    return;
+  }
+
+  bossExplosion("ワニ撃破!!");
+  S.score+=2500+S.stage*500;
+
+  nextStageOrClear._t1=setTimeout(()=>{
+    danger(`STAGE ${S.stage+1}へ進行中...`);
+  },520);
+
+  nextStageOrClear._t2=setTimeout(()=>{
+    S.stage++;
+    S.gatorMax=boss().hp;
+    S.gatorHp=S.gatorMax;
+
+    const sp=stageSpeed();
+    S.pSpeed=sp.p;
+    S.cSpeed=sp.c;
+
+    S.gatorBox=[];
+    S.koLock=false;
+
+    $("gator").classList.remove("boomed","bossShake","damaged","hit","jump");
+    $("gator").style.opacity=1;
+    $("boom").classList.remove("show");
+    $("koText").classList.remove("show");
+
+    renderGrid("gator");
+    danger(`STAGE ${S.stage} ${boss().n}`);
+
+    resetPlayer();
+    resetCpu();
+    updateUI();
+  },1050);
+}
 function tick(){const now=Date.now();if(S.fever&&now>S.feverUntil){S.fever=false;$("fever").classList.remove("run","on")}if(S.ultPower&&now>S.ultPowerUntil){S.ultPower=false;toast("奥義効果終了")}if(S.koLock)return;const sp=stageSpeed();S.pSpeed=sp.p;S.cSpeed=sp.c;S.pY+=S.pSpeed*2.25;S.cY+=S.cSpeed*2.25;setFall($("catItem"),S.pY);setFall($("cpuItem"),S.cY);if(S.pItem&&S.pY>S.lim)missPlayer();if(S.cItem&&!S.cpuResolving&&S.cY>=S.cpuDecision)cpuResolve();if(S.cItem&&!S.cpuResolving&&S.cY>S.lim)missCpu()}
 function loop(ts){if(!S.running)return;if(ts-S.lastFrame<33){S.raf=requestAnimationFrame(loop);return}S.lastFrame=ts;if(!S.paused&&!S.counting){tick();S.uiFrame++;if(S.uiFrame%4===0)updateUI()}S.raf=requestAnimationFrame(loop)}
 function brainAge(clear){if(clear)return 20;const stage=S.stage,miss=S.miss,combo=S.maxCombo,damageRate=S.damageTaken/Math.max(1,S.catMax*Math.max(1,stage));let age=65;age-=stage*1.25;if(combo>=100)age-=12;else if(combo>=80)age-=10;else if(combo>=60)age-=8;else if(combo>=40)age-=6;else if(combo>=25)age-=4;else if(combo>=12)age-=2;age+=miss*0.95;if(damageRate<0.20)age-=5;else if(damageRate<0.40)age-=2;else if(damageRate<0.70)age+=2;else if(damageRate<1.00)age+=5;else age+=8;if(stage>=20)age=Math.max(age,34);else if(stage>=18)age=Math.max(age,38);else if(stage>=15)age=Math.max(age,44);else if(stage>=10)age=Math.max(age,50);else age=Math.max(age,56);if(miss>=45)age=Math.max(age,58);else if(miss>=35)age=Math.max(age,52);else if(miss>=25)age=Math.max(age,46);else if(miss>=15)age=Math.max(age,38);return Math.max(20,Math.min(88,Math.round(age)))}
